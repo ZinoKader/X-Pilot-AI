@@ -84,18 +84,18 @@ def tick():
             # useful variables: targetCount, targetId
             # useful functions: ai.targetAlive
 
-            targetId = getAliveTargetId(targetCount)
+            for i in range(targetCount):
+                if ai.targetAlive(i):
+                    targetId = i
 
             # Calculate what direction the target is in, save in
             # the variable targetDirection
             # useful variables: selfX, selfY
             # useful functions: math.atan2, ai.targetX, ai.targetY
 
-            targetX = ai.targetX(targetId)
-            targetY = ai.targetY(targetId)
-
+            targetX = ai.targetX(targetId) - selfX
+            targetY = ai.targetY(targetId) - selfY
             targetDirection = math.atan2(targetY, targetX)
-            print("################ targetdirection ################ " + str(targetDirection) + " ################ targetdirection ################")
 
             # Turn to the direction of the target
             # useful variables: targetDirection
@@ -115,8 +115,8 @@ def tick():
             # useful variables: selfHeading, targetDirection, mode
             # There is a function defined below called angleDiff that
             # is very useful as well.
-            
-            angledifference = angleDiff(targetDirection, selfHeading)
+
+            angledifference = angleDiff(selfHeading, targetDirection)
             if angledifference <= 0.05:
                 mode = "shoot"
 
@@ -148,15 +148,6 @@ def angleDiff(one, two):
     a1 = (one - two) % (2*math.pi)
     a2 = (two - one) % (2*math.pi)
     return min(a1, a2)
-
-"""
-custom functions =9
-"""
-
-def getAliveTargetId(targetCount):
-    for i in range(targetCount):
-        if ai.targetAlive(i):
-            return i
 
 #
 # Parse the command line arguments
