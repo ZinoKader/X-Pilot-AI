@@ -84,7 +84,6 @@ def tick():
             # useful variables: targetCount, targetId
             # useful functions: ai.targetAlive
 
-            #använder egen metod
             targetId = getAliveTargetId(targetCount)
 
             # Calculate what direction the target is in, save in
@@ -95,7 +94,8 @@ def tick():
             targetX = ai.targetX(targetId)
             targetY = ai.targetY(targetId)
 
-            targetDirection = math.atan2(targetX, targetY)
+            targetDirection = math.atan2(targetY, targetX)
+            print("################ targetdirection ################ " + str(targetDirection) + " ################ targetdirection ################")
 
             # Turn to the direction of the target
             # useful variables: targetDirection
@@ -106,7 +106,7 @@ def tick():
             # or third tick is a simple solution (use tickCount and %)
 
             if tickCount % 3 == 0:
-                ai.turnRad(targetDirection)
+                ai.turnToRad(targetDirection)
 
             # Check if you are aiming in the direction of the target,
             # if so, change mode to shoot.
@@ -114,10 +114,10 @@ def tick():
             # cannot be 0 for many angles.
             # useful variables: selfHeading, targetDirection, mode
             # There is a function defined below called angleDiff that
-            # is very useful as well
-
+            # is very useful as well.
+            
             angledifference = angleDiff(targetDirection, selfHeading)
-            if angledifference < 1: #mindre än 1 rad ~ 56 grader
+            if angledifference <= 0.05:
                 mode = "shoot"
 
         elif mode == "shoot":
@@ -125,13 +125,15 @@ def tick():
             # Shoot the target
             # useful functions: ai.fireShot
 
-            ai.fireShot()
-
             # if the target is destroyed, change state to aim
             # useful variables: targetId, mode
             # useful functions: ai.targetAlive
+
             if not ai.targetAlive(targetId):
                 mode = "aim"
+            else:
+                ai.fireShot()
+
 
     except:
         #
