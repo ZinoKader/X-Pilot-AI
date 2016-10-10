@@ -48,14 +48,22 @@ def tick():
         selfHeading = ai.selfHeadingRad()
         # 0-2pi, 0 in x direction, positive toward y
 
-        # Add more sensors readings here
-
         checkpoint = ai.nextCheckpoint()
 
         checkpointX = ai.checkpointX(checkpoint) - selfX
         checkpointY = ai.checkpointY(checkpoint) - selfY
 
-        targetDirection = math.atan2(checkpointY, checkpointX)
+        #https://www.youtube.com/watch?v=k1tsGGz-Qw0
+        highonpotenuse = ( (checkpointX ** 2) + (checkpointY ** 2) ) ** (1 / 2)
+        centerX = 400 - selfX
+        centerY = 400 - selfY
+
+        if highonpotenuse < 250:
+            targetDirection = math.atan2(centerY, centerX)
+            mode = "stop"
+        else:
+            mode = "travel"
+            targetDirection = math.atan2(checkpointY, checkpointX)
 
         ai.turnToRad(targetDirection)
 
@@ -65,15 +73,30 @@ def tick():
         if angledifference <= 0.05:
             mode = "travel"
 
-        print ("tick count:", tickCount, "mode", mode)
-
 
         if mode == "ready":
             pass
 
         if mode == "travel":
+            ai.setPower(40)
             ai.thrust()
 
+        if mode == "stop":
+            ai.turnRad(math.pi)
+            ai.setPower(55)
+            ai.thrust()
+
+        if mode == "shoot":
+            ai.fireShot()
+
+
+        #print debug info every tenth tick to avoid congestion
+            if tickCount % 10 == 0:
+                print("\n")
+                #print(str(highonpotenuse))
+                print("X:" + str(selfX))
+                print("Y:" + str(selfY))
+                print(str(checkpoint))
 
     except:
         print(traceback.print_exc())
