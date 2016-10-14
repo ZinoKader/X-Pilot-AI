@@ -37,10 +37,27 @@ def tick():
 
         tickCount += 1
 
-        #
-        # Read some "sensors" into local variables, to avoid excessive calls to the API
-        # and improve readability.
-        #
+        targetCount = ai.radarCount()
+        #print statements for debugging, either here or further down in the code.
+        # Useful functions: round(), math.degrees(), math.radians(), etc.
+        # os.system('clear') clears the terminal screen, which can be useful.()
+        targetCountAlive = 0
+
+        for i in range(targetCount):
+            if ai.targetAlive(i):
+                targetCountAlive += 1
+
+        # Use print statements for debugging, either here or further down in the code.
+        # Useful functions: round(), math.degrees(), math.radians(), etc.
+        # os.system('clear') clears the terminal screen, which can be useful.
+
+        targetlist = {}
+        for i in range(targetCount):
+            if ai.targetAlive(i):
+                targetdistance = ( ( (ai.targetX(i) - selfX) ** 2) + ( (ai.targetY(i) - selfY) ** 2) ) ** (1 / 2)
+                targetlist[targetdistance] = i
+
+        targetId = targetlist.get(min(targetlist))
 
         selfX = ai.selfX()
         selfY = ai.selfY()
@@ -48,7 +65,7 @@ def tick():
         selfVelY = ai.selfVelY()
         selfSpeed = ai.selfSpeed()
 
-        selfHeading = ai.selfHeadingRad() 
+        selfHeading = ai.selfHeadingRad()
         # 0-2pi, 0 in x direction, positive toward y
 
         # Add more sensors readings here
@@ -69,9 +86,9 @@ def tick():
 #
 parser = OptionParser()
 
-parser.add_option ("-p", "--port", action="store", type="int", 
-                   dest="port", default=15345, 
-                   help="The port number. Used to avoid port collisions when" 
+parser.add_option ("-p", "--port", action="store", type="int",
+                   dest="port", default=15345,
+                   help="The port number. Used to avoid port collisions when"
                    " connecting to the server.")
 
 (options, args) = parser.parse_args()
@@ -82,7 +99,7 @@ name = "Stub"
 # Start the AI
 #
 
-ai.start(tick,["-name", name, 
+ai.start(tick,["-name", name,
                "-join",
                "-turnSpeed", "64",
                "-turnResistance", "0",
