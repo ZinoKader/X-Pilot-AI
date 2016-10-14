@@ -79,6 +79,7 @@ def tick():
 
         print(targetX)
         print(targetY)
+        print(targetlist)
 
         targetdistance = ( ( targetX ** 2) + ( targetY ** 2) ) ** (1 / 2)
         targetDirection = math.atan2(targetY, targetX)
@@ -100,9 +101,9 @@ def tick():
 
             if velocity < 15 and tickCount % 3 == 0:
                 ai.turnToRad(targetDirection)
-                ai.setPower(30)
+                ai.setPower(40)
                 ai.thrust()
-            elif velocity > 15 and tickCount % 5 == 0:
+            elif velocity > 15:
                 ai.turnToRad(velocityvector + math.pi)
                 ai.setPower(55)
                 ai.thrust()
@@ -123,12 +124,21 @@ def tick():
                     ai.turnToRad(velocityvector + math.pi)
                     ai.setPower(55)
                     ai.thrust()
-                elif targetdistance < 600 and velocity < 10:
+                elif targetdistance < 250: #spin-circus compensation. Will eventually fully stop if the ship keeps spinning around a target.
+                    if velocity > 5:
+                        ai.turnToRad(velocityvector + math.pi)
+                        ai.setPower(55)
+                        ai.thrust()
+                    else:
+                        ai.turnToRad(targetDirection)
+                        ai.fireShot()
+                elif targetdistance < 600:
                     ai.turnToRad(targetDirection)
-                    ai.setPower(20)
+                    ai.setPower(55)
                     ai.thrust()
                     ai.fireShot()
-
+                elif targetdistance > 800:
+                    mode = "aim"
 
     except:
         #
