@@ -87,6 +87,7 @@ def tick():
             for i in range(targetCount):
                 if ai.targetAlive(i):
                     targetId = i
+                    break
 
             # Calculate what direction the target is in, save in
             # the variable targetDirection
@@ -105,8 +106,7 @@ def tick():
             # it may be due to latency. Only turning every second
             # or third tick is a simple solution (use tickCount and %)
 
-            if tickCount % 3 == 0:
-                ai.turnToRad(targetDirection)
+            ai.turnToRad(targetDirection)
 
             # Check if you are aiming in the direction of the target,
             # if so, change mode to shoot.
