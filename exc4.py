@@ -32,32 +32,12 @@ def tick():
         #
         if not ai.selfAlive():
             tickCount = 0
-            mode = "ready"
+            mode = "shoot"
             return
 
         tickCount += 1
 
-        targetCount = ai.radarCount()
-        #print statements for debugging, either here or further down in the code.
-        # Useful functions: round(), math.degrees(), math.radians(), etc.
-        # os.system('clear') clears the terminal screen, which can be useful.()
-        targetCountAlive = 0
-
-        for i in range(targetCount):
-            if ai.targetAlive(i):
-                targetCountAlive += 1
-
-        # Use print statements for debugging, either here or further down in the code.
-        # Useful functions: round(), math.degrees(), math.radians(), etc.
-        # os.system('clear') clears the terminal screen, which can be useful.
-
-        targetlist = {}
-        for i in range(targetCount):
-            if ai.targetAlive(i):
-                targetdistance = ( ( (ai.targetX(i) - selfX) ** 2) + ( (ai.targetY(i) - selfY) ** 2) ) ** (1 / 2)
-                targetlist[targetdistance] = i
-
-        targetId = targetlist.get(min(targetlist))
+        targetCountScreen = ai.asteroidCountScreen()
 
         selfX = ai.selfX()
         selfY = ai.selfY()
@@ -65,21 +45,78 @@ def tick():
         selfVelY = ai.selfVelY()
         selfSpeed = ai.selfSpeed()
 
+        targetdistance = 0
+        targetlist = {}
+        for i in range(targetCountScreen):
+            targetdistance = ai.asteroidDist(i)
+            targetlist[targetdistance] = i
+
+        targetId = targetlist.get(min(targetlist))
+
         selfHeading = ai.selfHeadingRad()
-        # 0-2pi, 0 in x direction, positive toward y
 
-        # Add more sensors readings here
+        targetDirection = math.atan2(ai.asteroidY(targetId) - selfY, ai.asteroidX(targetId) - selfX)
 
-        print ("tick count:", tickCount, "mode", mode)
+        #print ("tick count:", tickCount, "mode", mode)
+
+        px = ai.asteroidX(targetId) - selfX
+        py = ai.asteroidY(targetId) - selfY
+        vx = ai.asteroidVelX(targetId) - selfVelX
+        vy = ai.asteroidVelY(targetId) - selfVelY
+
+        bulletspeedx = (21 * math.cos(selfHeading)) + selfSpeed
+        bulletspeedy = (21 * math.sin(selfHeading)) + selfSpeed
+        bulletspeed = ( (bulletspeedx ** 2) + (bulletspeedy ** 2) ) ** (1 / 2)
+
+        reltargetspeedX = ( ai.asteroidSpeed(targetId) * math.cos(ai.asteroidVelX(targetId)) ) + selfSpeed
+        reltargetspeedY = ( ai.asteroidSpeed(targetId) * math.sin(ai.asteroidVelY(targetId)) ) + selfSpeed
+        reltargetspeed = ( (reltargetspeedX ** 2) + (reltargetspeedY ** 2) ) ** (1 / 2)
+
+        impacttime = time_of_impact(px, py, vx, vy, bulletspeed)
+
+        aimDirection = targetDirection + ( reltargetspeed * impacttime )
+        print(aimDirection)
 
 
-        if mode == "ready":
-            pass
+        if mode == "wait":
+            if targetCountScreen > 0:
+                mode = "shoot"
 
+        elif mode == "shoot":
+
+            if targetCountScreen == 0:
+                mode = "wait"
+                return
+            else:
+                ai.turnToRad(aimDirection)
+                ai.fireShot()
 
     except:
         print(traceback.print_exc())
 
+
+
+def angleDiff(one, two):
+    """Calculates the smallest angle between two angles"""
+
+    a1 = (one - two) % (2*math.pi)
+    a2 = (two - one) % (2*math.pi)
+    return min(a1, a2)
+
+def time_of_impact(px, py, vx, vy, s):
+
+    a = s * s - (vx * vx + vy * vy)
+    b = px * vx + py * vy
+    c = px * px + py * py
+
+    d = b*b + a*c
+
+    t = 0;
+    if (d >= 0):
+        t = (b + math.sqrt(d)) / a
+        if (t < 0):
+            t = 0
+    return t
 
 #
 # Parse the command line arguments

@@ -120,7 +120,7 @@ def tick():
             if not ai.targetAlive(targetId):
                 mode = "aim"
             else:
-                if velocity > 10 and tickCount % 5 == 0 and targetdistance > 600:
+                if velocity > 10 and targetdistance > 500:
                     ai.turnToRad(velocityvector + math.pi)
                     ai.setPower(55)
                     ai.thrust()
