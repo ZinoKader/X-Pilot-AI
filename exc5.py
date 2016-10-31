@@ -42,22 +42,56 @@ def tick():
         # and improve readability.
         #
 
+        itemCountScreen = ai.itemCountScreen()
+        targetdistance = 0
+        targetlist = {}
+
+        for i in range(itemCountScreen):
+            targetdistance = ai.itemDist(i)
+            targetlist[targetdistance] = i
+
+        targetId = targetlist.get(min(targetlist))
+
         selfX = ai.selfX()
         selfY = ai.selfY()
         selfVelX = ai.selfVelX()
         selfVelY = ai.selfVelY()
         selfSpeed = ai.selfSpeed()
+        velocityvector = math.atan2(ai.selfVelY(), ai.selfVelX())
+
+        targetX = ai.itemX(targetId) - selfX
+        targetY = ai.itemY(targetId) - selfY
 
         selfHeading = ai.selfHeadingRad()
-        # 0-2pi, 0 in x direction, positive toward y
 
-        # Add more sensors readings here
+        targetDirection = math.atan2(targetY, targetX)
 
-        print ("tick count:", tickCount, "mode", mode)
+        distancelist = []
+        for i in range(361):
+            distancelist.append(ai.wallFeelerRad(100, (i * (math.pi / 180))))
 
+        for i in distancelist:
+            if i > -1:
+                mode = "escapewall"
+                break
+            else:
+                mode = "thrust"
+                break
 
         if mode == "ready":
             pass
+        elif mode == "escapewall":
+            ai.turnToRad(velocityvector + math.pi)
+            ai.setPower(55)
+            ai.thrust()
+        elif mode == "thrust":
+            ai.turnToRad(targetDirection)
+            ai.setPower(10)
+            ai.thrust()
+
+        print(mode)
+
+
 
 
     except:
