@@ -39,44 +39,46 @@ def tick():
 
         targetCountScreen = ai.asteroidCountScreen()
 
-        selfX = ai.selfX()
-        selfY = ai.selfY()
+        selfX = ( ai.selfRadarX() / ai.radarWidth() ) * ai.mapWidthPixels()
+        selfY = ( ai.selfRadarY() / ai.radarHeight() ) * ai.mapHeightPixels()
         selfVelX = ai.selfVelX()
         selfVelY = ai.selfVelY()
         selfSpeed = ai.selfSpeed()
+        velocityvector = math.atan2(ai.selfVelY(), ai.selfVelX())
 
         targetdistance = 0
         targetlist = {}
         for i in range(targetCountScreen):
-            targetdistance = ai.asteroidDist(i)
+            targetdistance = ai.radarDist(i)
             targetlist[targetdistance] = i
 
         targetId = targetlist.get(min(targetlist))
 
         selfHeading = ai.selfHeadingRad()
 
-        targetDirection = math.atan2(ai.asteroidY(targetId) - selfY, ai.asteroidX(targetId) - selfX)
-
-        #print ("tick count:", tickCount, "mode", mode)
-
-        px = ai.asteroidX(targetId) - selfX
-        py = ai.asteroidY(targetId) - selfY
-        vx = ai.asteroidVelX(targetId) - selfVelX
-        vy = ai.asteroidVelY(targetId) - selfVelY
-
-        bulletspeedx = (21 * math.cos(selfHeading)) + selfSpeed
-        bulletspeedy = (21 * math.sin(selfHeading)) + selfSpeed
+        bulletspeedx = (30 * math.cos(selfHeading)) + selfSpeed
+        bulletspeedy = (30 * math.sin(selfHeading)) + selfSpeed
         bulletspeed = ( (bulletspeedx ** 2) + (bulletspeedy ** 2) ) ** (1 / 2)
 
-        reltargetspeedX = ( ai.asteroidSpeed(targetId) * math.cos(ai.asteroidVelX(targetId)) ) + selfSpeed
-        reltargetspeedY = ( ai.asteroidSpeed(targetId) * math.sin(ai.asteroidVelY(targetId)) ) + selfSpeed
-        reltargetspeed = ( (reltargetspeedX ** 2) + (reltargetspeedY ** 2) ) ** (1 / 2)
+        px = ai.asteroidX(targetId) - selfX
+        vx = ai.asteroidVelX(targetId) - selfVelX
 
-        impacttime = time_of_impact(px, py, vx, vy, bulletspeed)
+        py = ai.asteroidY(targetId) - selfY
+        vy = ai.asteroidVelY(targetId) - selfVelY
 
-        aimDirection = targetDirection + ( reltargetspeed * impacttime )
-        print(aimDirection)
+        s = bulletspeed
+        t = time_of_impact(px, py, vx, vy, s)
 
+        uppe = py + (vy * t)
+        nere = px + (vx * t)
+
+        if selfSpeed > 8:
+            ai.turnToRad(velocityvector + math.pi)
+            ai.thrust()
+
+        aimDirection = math.atan2(uppe, nere)
+
+        #print ("tick count:", tickCount, "mode", mode)
 
         if mode == "wait":
             if targetCountScreen > 0:
@@ -87,7 +89,7 @@ def tick():
             if targetCountScreen == 0:
                 mode = "wait"
                 return
-            else:
+            elif selfSpeed < 8:
                 ai.turnToRad(aimDirection)
                 ai.fireShot()
 
@@ -105,16 +107,16 @@ def angleDiff(one, two):
 
 def time_of_impact(px, py, vx, vy, s):
 
-    a = s * s - (vx * vx + vy * vy)
-    b = px * vx + py * vy
-    c = px * px + py * py
+    a = (s * s) - ( (vx * vx) + (vy * vy) )
+    b = (px * vx) + (py * vy)
+    c = (px * px) + (py * py)
 
-    d = b*b + a*c
+    d = (b * b) + (a * c)
 
-    t = 0;
-    if (d >= 0):
+    t = 0
+    if d >= 0:
         t = (b + math.sqrt(d)) / a
-        if (t < 0):
+        if t < 0:
             t = 0
     return t
 
