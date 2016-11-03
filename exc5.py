@@ -46,47 +46,71 @@ def tick():
         targetdistance = 0
         targetlist = {}
 
-        for i in range(itemCountScreen):
-            targetdistance = ai.itemDist(i)
-            targetlist[targetdistance] = i
-
-        targetId = targetlist.get(min(targetlist))
-
         selfX = ai.selfX()
         selfY = ai.selfY()
         selfVelX = ai.selfVelX()
         selfVelY = ai.selfVelY()
         selfSpeed = ai.selfSpeed()
+        selfHeading = ai.selfHeadingRad()
         velocityvector = math.atan2(ai.selfVelY(), ai.selfVelX())
 
-        targetX = ai.itemX(targetId) - selfX
-        targetY = ai.itemY(targetId) - selfY
+        for i in range(itemCountScreen):
+            targetdistance = ai.itemDist(i)
+            targetlist[targetdistance] = i
 
-        selfHeading = ai.selfHeadingRad()
-
-        targetDirection = math.atan2(targetY, targetX)
+        if targetlist:
+            targetId = targetlist.get(min(targetlist))
+            targetX = ai.itemX(targetId) - selfX
+            targetY = ai.itemY(targetId) - selfY
+            targetDirection = math.atan2(targetY, targetX)
+        else:
+            targetDirection = math.atan2(ai.mapHeightPixels() / 2, ai.mapWidthPixels() / 2)
 
         distancelist = []
-        for i in range(361):
-            distancelist.append(ai.wallFeelerRad(100, (i * (math.pi / 180))))
+        for i in range(360):
+            distancelist.append(ai.wallFeelerRad(110, (i * (math.pi / 180))))
 
+        wallnear = True
+        oppositedirection = None
         for i in distancelist:
-            if i > -1:
-                mode = "escapewall"
+            if i == -1:
+                wallnear = False
+            else:
+                wallnear = True
+                oppositedirection = distancelist[int(i)]
                 break
+
+        if selfSpeed > 8:
+            ai.turnToRad(velocityvector + math.pi)
+            ai.setPower(55)
+            ai.thrust()
+
+        if wallnear:
+            if selfSpeed > 2:
+                if mode != "breakwall" and mode != "escapewall":
+                    mode = "breakwall"
+                else:
+                    mode = "escapewall"
+        else:
+            if selfSpeed > 10:
+                ai.turnToRad(velocityvector + math.pi)
+                ai.setPower(55)
+                ai.thrust
             else:
                 mode = "thrust"
-                break
 
         if mode == "ready":
             pass
-        elif mode == "escapewall":
+        elif mode == "breakwall":
             ai.turnToRad(velocityvector + math.pi)
+            ai.setPower(20)
+            ai.thrust()
+        elif mode == "escapewall":
             ai.setPower(55)
             ai.thrust()
         elif mode == "thrust":
             ai.turnToRad(targetDirection)
-            ai.setPower(10)
+            ai.setPower(8)
             ai.thrust()
 
         print(mode)
