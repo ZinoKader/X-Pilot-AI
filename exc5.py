@@ -71,13 +71,13 @@ def tick():
             distancelist.append(ai.wallFeelerRad(110, (i * (math.pi / 180))))
 
         wallnear = True
-        oppositedirection = None
+        walldirection = None
         for i in distancelist:
             if i == -1:
                 wallnear = False
             else:
                 wallnear = True
-                oppositedirection = distancelist[int(i)]
+                walldirection = distancelist[int(i)]
                 break
 
         if selfSpeed > 8:
