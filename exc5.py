@@ -110,7 +110,7 @@ def tick():
             ai.thrust()
         elif mode == "thrust":
             ai.turnToRad(targetDirection)
-            ai.setPower(8)
+            ai.setPower(20)
             ai.thrust()
 
         print(mode)
