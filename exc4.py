@@ -46,13 +46,15 @@ def tick():
         selfSpeed = ai.selfSpeed()
         velocityvector = math.atan2(ai.selfVelY(), ai.selfVelX())
 
-        targetdistance = 0
-        targetlist = {}
+        radardistance = 0
+        radarlist = {}
         for i in range(targetCountScreen):
-            targetdistance = ai.radarDist(i)
-            targetlist[targetdistance] = i
+            radardistance = ai.radarDist(i)
+            radarlist[radardistance] = i
 
-        targetId = targetlist.get(min(targetlist))
+        targetId = radarlist.get(min(radarlist))
+        radardistance = min(radarlist)
+
 
         selfHeading = ai.selfHeadingRad()
 
@@ -60,11 +62,28 @@ def tick():
         bulletspeedy = (30 * math.sin(selfHeading)) + selfSpeed
         bulletspeed = ( (bulletspeedx ** 2) + (bulletspeedy ** 2) ) ** (1 / 2)
 
-        px = ai.asteroidX(targetId) - selfX
-        vx = ai.asteroidVelX(targetId) - selfVelX
+        selfAsteroidX = (ai.asteroidX(targetId) - ai.selfX())
+        selfAsteroidY = (ai.asteroidY(targetId) - ai.selfY())
 
-        py = ai.asteroidY(targetId) - selfY
+        px = 0
+        py = 0
+        vx = 0
+        vy = 0
+
+        if selfAsteroidX > (ai.mapWidthPixels() / 2):
+            px = selfAsteroidX - ai.mapWidthPixels()
+        else:
+            px = selfAsteroidX
+
+        if selfAsteroidY > (ai.mapHeightPixels() / 2):
+            py = selfAsteroidY - ai.mapHeightPixels()
+        else:
+            py = selfAsteroidY
+
+        vx = ai.asteroidVelX(targetId) - selfVelX
         vy = ai.asteroidVelY(targetId) - selfVelY
+
+
 
         s = bulletspeed
         t = time_of_impact(px, py, vx, vy, s)
@@ -72,7 +91,7 @@ def tick():
         uppe = py + (vy * t)
         nere = px + (vx * t)
 
-        if selfSpeed > 8:
+        if selfSpeed > 5:
             ai.turnToRad(velocityvector + math.pi)
             ai.thrust()
 
