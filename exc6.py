@@ -7,6 +7,7 @@ import traceback
 import math
 import libpyAI as ai
 from optparse import OptionParser
+import random
 
 #
 # Global variables that persist between ticks
@@ -68,14 +69,35 @@ def tick():
 
         interpretMessage(latestChatMessage)
 
-        if mode == "ready":
-            pass
+"""
+We need two modes for the bots, a client and a server. Server should activate
+if the number of playerCountServer = 1, and the server will print messages. The
+bot with mode client will respond. I'm having trouble making the modes work.
+The number generator works."""
 
+        if mode == "ready" and ai.playerCountServer() == 1:
+            mode == "Server"
+            print(mode)
+        else:
+            mode == "Client"
+            print(mode)
 
     except:
         print(traceback.print_exc())
 
+def players():
+    if ai.playerCountServer() == 1:
+        mode == "server"
+        print(ai.playerCountServer())
+    else:
+        mode == "client"
+        print(mode)
 
+def talk():
+    if mode == "server":
+        ai.talk("coord")
+    elif mode == "client":
+        interpretMessage(message)
 
 def getCoordinates():
     return (selfX, selfY)
@@ -121,14 +143,15 @@ parser.add_option ("-p", "--port", action="store", type="int",
 
 (options, args) = parser.parse_args()
 
-name = "Stub"
+name = "Stub" + str(random.randrange(0, 10000))
+
 
 #
 # Start the AI
 #
 
-ai.start(tick,["-name", name,
-               "-join",
-               "-turnSpeed", "64",
-               "-turnResistance", "0",
-               "-port", str(options.port)])
+ai.start(tick ,["-name", name,
+            "-join",
+            "-turnSpeed", "64",
+            "-turnResistance", "0",
+            "-port", str(options.port)])
