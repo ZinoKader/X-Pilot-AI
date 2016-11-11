@@ -68,7 +68,7 @@ def tick():
 
         distancelist = []
         for i in range(360):
-            distancelist.append(ai.wallFeelerRad(110, (i * (math.pi / 180))))
+            distancelist.append(ai.wallFeelerRad(90, (i * (math.pi / 180))))
 
         wallnear = True
         walldirection = None
@@ -103,7 +103,7 @@ def tick():
             pass
         elif mode == "breakwall":
             ai.turnToRad(velocityvector + math.pi)
-            ai.setPower(20)
+            ai.setPower(40)
             ai.thrust()
         elif mode == "escapewall":
             ai.setPower(55)

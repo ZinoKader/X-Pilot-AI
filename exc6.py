@@ -6,6 +6,7 @@ import sys
 import traceback
 import math
 import libpyAI as ai
+import random
 from optparse import OptionParser
 
 #
@@ -20,17 +21,14 @@ selfTracking = None
 visibleItems = None
 visiblePlayers = []
 latestChatMessage = None
-# add more if needed
+comm_role = None
+requester_questions = ["requesting... give me your coords", "requesting... hand over some headings, will ya?",\
+ "requesting... tracking please", "requesting... what items do you see?", "requesting... wanna tell me about the players on the screen?"]
 
 def tick():
-    #
-    # The API won't print out exceptions, so we have to catch and print them ourselves.
-    #
+
     try:
 
-        #
-        # Declare global variables so we have access to them in the function
-        #
         global tickCount
         global mode
         global selfX
@@ -41,16 +39,9 @@ def tick():
         global visiblePlayers
         global latestChatMessage
 
-        #
-        # Reset the state machine if we die.
-        #
+
         if not ai.selfAlive():
             tickCount = 0
-            mode = "ready"
-            return
-
-        tickCount += 1
-
 
         selfX = ai.selfX()
         selfY = ai.selfY()
@@ -60,13 +51,38 @@ def tick():
         selfTracking = ai.selfTrackingRad()
         selfHeading = ai.selfHeadingRad()
         visibleItems = ai.itemCountScreen()
-        latestChatMessage = ai.scanGameMsg(0)
+        latestChatMessage = ai.scanTalkMsg(0)
 
         visiblePlayers = []
         for i in range(ai.shipCountScreen()):
             visiblePlayers.append(ai.playerName(i))
 
+        allPlayers = []
+        for i in range(ai.playerCountServer()):
+            allPlayers.append(ai.playerName(i))
+
+        setRole(allPlayers)
+
+        if comm_role == "requester" and "requesting" not in latestChatMessage:
+            if not latestChatMessage:
+                ai.talk(requester_questions[0])
+            elif "answerer" in latestChatMessage:
+                if "coord" in latestChatMessage:
+                    ai.talk(requester_questions[1])
+                elif "heading" in latestChatMessage:
+                    ai.talk(requester_questions[2])
+                elif "tracking" in latestChatMessage:
+                    ai.talk(requester_questions[3])
+                elif "item" in latestChatMessage:
+                    ai.talk(requester_questions[4])
+
+
         interpretMessage(latestChatMessage)
+
+        text_file = open("Output.txt", "a")
+        text_file.write(latestChatMessage + "\n")
+        text_file.close()
+
 
         if mode == "ready":
             pass
@@ -74,7 +90,6 @@ def tick():
 
     except:
         print(traceback.print_exc())
-
 
 
 def getCoordinates():
@@ -96,21 +111,43 @@ def getLatestChatMessage():
     return latestChatMessage
 
 def sendMessage(message):
-    if tickCount % 2 == 0:
-        message = str(message)
-        ai.talk(message)
+    global comm_role
+
+    message = str(message)
+    ai.talk(message)
+
+def setRole(players):
+    global comm_role
+
+    self_name = ai.selfName()
+    self_id = int(self_name.replace("Bot",""))
+
+    players.remove(self_name)
+
+    other_name = players[0]
+    other_id = int(other_name.replace("Bot",""))
+
+    if self_id > other_id:
+        comm_role = "requester"
+    else:
+        comm_role = "answerer"
+    print(comm_role)
+
 
 def interpretMessage(message):
-    if "coord" in message.lower():
-        sendMessage(getCoordinates())
-    if "heading" in message.lower():
-        sendMessage(getHeading())
-    if "tracking" in message.lower():
-        sendMessage(getTracking())
-    if "item" in message.lower():
-        sendMessage(getVisibleItems())
-    if "player" in message.lower():
-        sendMessage(getVisiblePlayers())
+    global comm_role
+
+    if comm_role == "answerer" and "requesting" in message.lower() and "answerer" not in latestChatMessage:
+        if "coord" in message.lower():
+            sendMessage(comm_role + "," + "coord," + str(getCoordinates()))
+        elif "heading" in message.lower():
+            sendMessage(comm_role + "," + "heading," + str(getHeading()))
+        elif "tracking" in message.lower():
+            sendMessage(comm_role + "," + "tracking," + str(getTracking()))
+        elif "item" in message.lower():
+            sendMessage(comm_role + "," + "item," + str(getVisibleItems()))
+        elif "player" in message.lower():
+            sendMessage(comm_role + "," + "player," + str(getVisiblePlayers()))
 
 parser = OptionParser()
 
@@ -121,11 +158,8 @@ parser.add_option ("-p", "--port", action="store", type="int",
 
 (options, args) = parser.parse_args()
 
-name = "Stub"
+name = "Bot" + str(random.randint(0,9999))
 
-#
-# Start the AI
-#
 
 ai.start(tick,["-name", name,
                "-join",

@@ -176,7 +176,6 @@ def distanceTo(dist1, dist2):
         return dist1 - dist2
     else:
         return dist2 - dist1
-    #return max(dist1, dist2) - min(dist1, dist2)
 
 parser = OptionParser()
 

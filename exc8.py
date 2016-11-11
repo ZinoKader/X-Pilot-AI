@@ -13,6 +13,8 @@ selfSpeed = None
 velocityvector = None
 selfX = None
 selfY = None
+targetX = None
+targetY = None
 selfHeading = None
 selfTracking = None
 visibleItems = None
@@ -33,6 +35,8 @@ def tick():
         global mode
         global selfX
         global selfY
+        global targetX
+        global targetY
         global selfSpeed
         global selfHeading
         global selfTracking
@@ -41,6 +45,14 @@ def tick():
         global visiblePlayers
         global latestChatMessage
 
+
+        mine_id = 8
+        missile_id = 9
+        fuel_id = 15
+        missile = 9
+        fuel = 15
+        laser = 11
+        armor = 20
         #
         # Reset the state machine if we die.
         #
@@ -64,15 +76,6 @@ def tick():
         visibleItems = ai.itemCountScreen()
         latestChatMessage = ai.scanGameMsg(0)
         selfHeading = ai.selfHeadingRad()
-        selfitems = int selfitem()
-        mine = 8
-        missile = 9
-        fuel = 15
-        laser = 11
-        armor = 20
-
-
-    for i in range()
 
 
         visiblePlayers = []
@@ -108,15 +111,16 @@ def getVisiblePlayers():
 def getLatestChatMessage():
     return latestChatMessage
 
-def getItems()
-    return
-
 def sendMessage(message):
     if tickCount % 2 == 0:
         message = str(message)
         ai.talk(message)
 
 def interpretMessage(message):
+
+    global targetX
+    global targetY
+
     if "move-to-pass" in message.lower():
         message = message.replace("move-to-pass", "")
         message = message.strip()
@@ -150,8 +154,19 @@ def interpretMessage(message):
         sendMessage(getVisibleItems())
     if "player" in message.lower():
         sendMessage(getVisiblePlayers())
-    if "mine", "missile", "fuel", "emergencyshield", "laser", "armor" in message.lower():
-        sendMessage(getItems())
+    if message.lower() in ["mine", "missile", "fuel", "emergencyshield", "laser", "armor"]:
+        print("FUCK")
+        message = message.replace("collect-item", "")
+        itemtype = message.strip()
+
+        for i in range(ai.itemCountScreen()):
+            if ai.itemType(i) == itemtype:
+                targetX = ai.itemX(i)
+                targetY = ai.itemY(i)
+                navigateTo(targetX, targetY)
+                break
+
+
 
 def navigateTo(xcoords, ycoords):
 
