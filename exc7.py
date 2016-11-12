@@ -18,7 +18,9 @@ selfTracking = None
 visibleItems = None
 visiblePlayers = []
 latestChatMessage = None
-# add more if needed
+latestInstruction = None
+missionstarted = False
+instructionstack = []
 
 def tick():
     #
@@ -40,17 +42,17 @@ def tick():
         global visibleItems
         global visiblePlayers
         global latestChatMessage
+        global latestInstruction
+        global missionstarted
+        global instructionstack
 
-        #
-        # Reset the state machine if we die.
-        #
+
         if not ai.selfAlive():
             tickCount = 0
             mode = "ready"
             return
 
         tickCount += 1
-
 
         selfX = ai.selfX()
         selfY = ai.selfY()
@@ -63,15 +65,21 @@ def tick():
         selfHeading = ai.selfHeadingRad()
         visibleItems = ai.itemCountScreen()
         latestChatMessage = ai.scanGameMsg(0)
-        selfHeading = ai.selfHeadingRad()
 
-
+        if "move" in latestChatMessage:
+            instructionstack.append(latestChatMessage)
+            latestInstruction = latestChatMessage
 
         visiblePlayers = []
         for i in range(ai.shipCountScreen()):
             visiblePlayers.append(ai.playerName(i))
 
-        interpretMessage(latestChatMessage)
+        if instructionstack:
+            interpretMessage(instructionstack[0])
+
+        if not missionstarted:
+            ai.talk("teacherbot: start-mission 7")
+            missionstarted = True
 
         if mode == "ready":
             pass
@@ -106,8 +114,9 @@ def sendMessage(message):
         ai.talk(message)
 
 def interpretMessage(message):
-    if "move-to-pass" in message.lower():
-        message = message.replace("move-to-pass", "")
+    if "move-to-pass" in message.lower() or "move-to-stop" in message.lower():
+        moveinstruction = message[:12]
+        message = message.replace(moveinstruction, "")
         message = message.strip()
 
         xcoords = ""
@@ -147,29 +156,33 @@ def navigateTo(xcoords, ycoords):
     targetY = int(ycoords) - selfY
 
     targetdistance = ( ( targetX ** 2) + ( targetY ** 2) ) ** (1 / 2)
-    print(targetdistance)
     targetDirection = math.atan2(targetY, targetX)
 
-    if targetdistance > 500:
-        ai.turnToRad(targetDirection)
-        ai.setPower(55)
-        ai.thrust()
-    else: # targetdistance <= 500
-        if targetdistance > 50:
-            ai.turnToRad(targetDirection)
-            ai.setPower(30)
+
+    if targetdistance < 3000:
+        if selfSpeed > 10:
+            ai.turnToRad(velocityvector + math.pi)
+            ai.setPower(55)
             ai.thrust()
         else:
-            if selfSpeed < 2:
-                if tickCount % 2 == 0:
-                    ai.talk("completed move-to-pass " + str(xcoords) + " " + str(ycoords))
-            else:
-                ai.turnToRad(velocityvector + math.pi)
-                ai.setPower(20)
-                ai.thrust()
-                print("###### Breaking ######")
+            ai.turnToRad(targetDirection)
+            ai.setPower(15)
+            ai.thrust()
+    else:
+        ai.turnToRad(targetDirection)
+        ai.setPower(20)
+        ai.thrust()
 
-    print(selfX, selfY)
+    if targetdistance < 150 and selfSpeed < 8:
+        if "completed" not in latestChatMessage and tickCount % 2 == 0:
+            ai.talk("teacherbot:" + "completed " + latestInstruction)
+            instructionstack.pop(0)
+
+    if tickCount % 20 == 0:
+        print("distance: " + str(targetdistance))
+        print("position: " + str(selfX) + ", " + str(selfY))
+        print(selfSpeed)
+        print("\n")
 
 
 def distanceTo(dist1, dist2):
