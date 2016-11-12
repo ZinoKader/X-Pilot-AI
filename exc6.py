@@ -43,6 +43,8 @@ def tick():
         if not ai.selfAlive():
             tickCount = 0
 
+        tickCount += 1
+
         selfX = ai.selfX()
         selfY = ai.selfY()
         selfVelX = ai.selfVelX()
@@ -63,10 +65,10 @@ def tick():
 
         setRole(allPlayers)
 
-        if comm_role == "requester" and "requesting" not in latestChatMessage:
-            if not latestChatMessage:
+        if comm_role == "requester" and "requesting" not in latestChatMessage and tickCount % 20 == 0:
+            if "start" in latestChatMessage:
                 ai.talk(requester_questions[0])
-            elif "answerer" in latestChatMessage:
+            elif "answering" in latestChatMessage:
                 if "coord" in latestChatMessage:
                     ai.talk(requester_questions[1])
                 elif "heading" in latestChatMessage:
@@ -78,11 +80,6 @@ def tick():
 
 
         interpretMessage(latestChatMessage)
-
-        text_file = open("Output.txt", "a")
-        text_file.write(latestChatMessage + "\n")
-        text_file.close()
-
 
         if mode == "ready":
             pass
@@ -131,23 +128,25 @@ def setRole(players):
         comm_role = "requester"
     else:
         comm_role = "answerer"
-    print(comm_role)
+
+    if tickCount % 60 == 0:
+        print("role: " + comm_role)
 
 
 def interpretMessage(message):
     global comm_role
 
-    if comm_role == "answerer" and "requesting" in message.lower() and "answerer" not in latestChatMessage:
+    if comm_role == "answerer" and "requesting" in message.lower() and "answering" not in message.lower() and tickCount % 20 == 0:
         if "coord" in message.lower():
-            sendMessage(comm_role + "," + "coord," + str(getCoordinates()))
+            sendMessage("answering..." + " coord, " + str(getCoordinates()))
         elif "heading" in message.lower():
-            sendMessage(comm_role + "," + "heading," + str(getHeading()))
+            sendMessage("answering..." + " heading, " + str(getHeading()))
         elif "tracking" in message.lower():
-            sendMessage(comm_role + "," + "tracking," + str(getTracking()))
+            sendMessage("answering..." + " tracking, " + str(getTracking()))
         elif "item" in message.lower():
-            sendMessage(comm_role + "," + "item," + str(getVisibleItems()))
+            sendMessage("answering..." + " item, " + str(getVisibleItems()))
         elif "player" in message.lower():
-            sendMessage(comm_role + "," + "player," + str(getVisiblePlayers()))
+            sendMessage("answering..." + " player, " + str(getVisiblePlayers()))
 
 parser = OptionParser()
 
