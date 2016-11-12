@@ -150,11 +150,11 @@ def navigateTo(xcoords, ycoords):
     print(targetdistance)
     targetDirection = math.atan2(targetY, targetX)
 
-    if targetdistance > 200:
+    if targetdistance > 500:
         ai.turnToRad(targetDirection)
         ai.setPower(55)
         ai.thrust()
-    else:
+    else: # targetdistance <= 500
         if targetdistance > 50:
             ai.turnToRad(targetDirection)
             ai.setPower(30)
@@ -167,6 +167,7 @@ def navigateTo(xcoords, ycoords):
                 ai.turnToRad(velocityvector + math.pi)
                 ai.setPower(20)
                 ai.thrust()
+                print("###### Breaking ######")
 
     print(selfX, selfY)
 
