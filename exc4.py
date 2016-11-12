@@ -5,6 +5,7 @@
 import sys
 import traceback
 import math
+import time
 import libpyAI as ai
 from optparse import OptionParser
 
@@ -45,6 +46,7 @@ def tick():
         selfVelY = ai.selfVelY()
         selfSpeed = ai.selfSpeed()
         velocityvector = math.atan2(ai.selfVelY(), ai.selfVelX())
+        ai.setTurnSpeed(64)
 
         radardistance = 0
         radarlist = {}
@@ -56,29 +58,35 @@ def tick():
         radardistance = min(radarlist)
 
 
+
+        # FOR TROUBLE SHOOTING
+        #current_time = time.strftime("%H:%M:%S")
+        #text_file = open("Log.txt", "a")
+        #text_file.write(str(ai.radarDist(targetId)) + " " + current_time + "\n")
+
         selfHeading = ai.selfHeadingRad()
 
         bulletspeedx = (30 * math.cos(selfHeading)) + selfSpeed
         bulletspeedy = (30 * math.sin(selfHeading)) + selfSpeed
         bulletspeed = ( (bulletspeedx ** 2) + (bulletspeedy ** 2) ) ** (1 / 2)
 
-        selfAsteroidX = (ai.asteroidX(targetId) - ai.selfX())
-        selfAsteroidY = (ai.asteroidY(targetId) - ai.selfY())
+        relAsteroidDistX = (ai.asteroidX(targetId) - ai.selfX())
+        relAsteroidDistY = (ai.asteroidY(targetId) - ai.selfY())
 
         px = 0
         py = 0
         vx = 0
         vy = 0
 
-        if selfAsteroidX > (ai.mapWidthPixels() / 2):
-            px = selfAsteroidX - ai.mapWidthPixels()
+        if relAsteroidDistX > (ai.mapWidthPixels() / 2):
+            px = relAsteroidDistX - ai.mapWidthPixels()
         else:
-            px = selfAsteroidX
+            px = relAsteroidDistX
 
-        if selfAsteroidY > (ai.mapHeightPixels() / 2):
-            py = selfAsteroidY - ai.mapHeightPixels()
+        if relAsteroidDistY > (ai.mapHeightPixels() / 2):
+            py = relAsteroidDistY - ai.mapHeightPixels()
         else:
-            py = selfAsteroidY
+            py = relAsteroidDistY
 
         vx = ai.asteroidVelX(targetId) - selfVelX
         vy = ai.asteroidVelY(targetId) - selfVelY
