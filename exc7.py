@@ -18,9 +18,10 @@ selfTracking = None
 visibleItems = None
 visiblePlayers = []
 latestChatMessage = None
-latestInstruction = None
 missionstarted = False
 instructionstack = []
+finishedinstructions = []
+chatmessages = []
 
 def tick():
     #
@@ -42,9 +43,10 @@ def tick():
         global visibleItems
         global visiblePlayers
         global latestChatMessage
-        global latestInstruction
         global missionstarted
         global instructionstack
+        global finishedinstructions
+        global chatmessages
 
 
         if not ai.selfAlive():
@@ -64,18 +66,23 @@ def tick():
         selfTracking = ai.selfTrackingRad()
         selfHeading = ai.selfHeadingRad()
         visibleItems = ai.itemCountScreen()
+
+        for i in range(10):
+            if ai.scanGameMsg(i) not in chatmessages:
+                chatmessages.append(ai.scanGameMsg(i))
+
         latestChatMessage = ai.scanGameMsg(0)
 
-        if "move" in latestChatMessage:
-            instructionstack.append(latestChatMessage)
-            latestInstruction = latestChatMessage
+        for message in chatmessages:
+            if "move" in message and "completed" not in message and message not in instructionstack and message not in finishedinstructions:
+                instructionstack.append(message)
 
         visiblePlayers = []
         for i in range(ai.shipCountScreen()):
             visiblePlayers.append(ai.playerName(i))
 
         if instructionstack:
-            interpretMessage(instructionstack[0])
+            interpretMessage(instructionstack[-1])
 
         if not missionstarted:
             ai.talk("teacherbot: start-mission 7")
@@ -84,8 +91,12 @@ def tick():
         if mode == "ready":
             pass
 
+        if tickCount % 60 == 0:
+            print(str(len(instructionstack)))
+
 
     except:
+        print(instructionstack)
         print(traceback.print_exc())
 
 
@@ -174,9 +185,10 @@ def navigateTo(xcoords, ycoords):
         ai.thrust()
 
     if targetdistance < 150 and selfSpeed < 8:
-        if "completed" not in latestChatMessage and tickCount % 2 == 0:
-            ai.talk("teacherbot:" + "completed " + latestInstruction)
-            instructionstack.pop(0)
+        if tickCount % 2 == 0:
+            ai.talk("teacherbot:" + "completed " + instructionstack[-1])
+            finishedinstructions.append(instructionstack[-1])
+            instructionstack.pop(-1)
 
     if tickCount % 20 == 0:
         print("distance: " + str(targetdistance))
