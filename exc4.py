@@ -48,49 +48,86 @@ def tick():
         velocityvector = math.atan2(ai.selfVelY(), ai.selfVelX())
         ai.setTurnSpeed(64)
 
-        radardistance = 0
-        radarlist = {}
+        px = None
+        py = None
+        vx = None
+        vy = None
+        distancelist = {}
         for i in range(targetCountScreen):
-            radardistance = ai.radarDist(i)
-            radarlist[radardistance] = i
+            if selfX > ai.mapWidthPixels() / 2:
+                if selfX - ai.asteroidX(i) >= (ai.mapWidthPixels() / 2):
+                    px = ai.mapWidthPixels() - (selfX - ai.asteroidX(i))
+                else:
+                    px = ai.asteroidX(i) - selfX
+            else:
+                if ai.asteroidX(i) - selfX >= (ai.mapWidthPixels() / 2):
+                    px = -(ai.mapWidthPixels() - (ai.asteroidX(i) - selfX))
+                else:
+                    px = ai.asteroidX(i) - selfX
 
-        targetId = radarlist.get(min(radarlist))
-        radardistance = min(radarlist)
+            if selfY > ai.mapHeightPixels() / 2:
+                if selfY - ai.asteroidY(i) >= (ai.mapHeightPixels() / 2):
+                    py = ai.mapHeightPixels() - (selfY - ai.asteroidY(i))
+                else:
+                    py = ai.asteroidY(i) - selfY
+            else:
+                if ai.asteroidY(i) - selfY >= (ai.mapHeightPixels() / 2):
+                    py = -(ai.mapHeightPixels() - (ai.asteroidY(i) - selfY))
+                else:
+                    py = ai.asteroidY(i) - selfY
 
 
+            relDistance = ( ( px ** 2) + ( py ** 2) ) ** ( 1/2 )
+
+            distancelist[relDistance] = i
+
+        targetId = distancelist.get(min(distancelist))
+        """
+        relAsteroidDistX = (ai.asteroidX(targetId) - ai.selfX())
+        if selfX > ai.mapWidthPixels():
+            relAsteroidDistX = ai.selfX() - ai.asteroidX(targetId)
+
+        relAsteroidDistY = (ai.asteroidY(targetId) - ai.selfY())
+        if selfY > ai.mapHeightPixels():
+            relAsteroidDistY = ai.selfY() - ai.asteroidY(targetId)
+        """
+        if selfX > ai.mapWidthPixels() / 2:
+            if selfX - ai.asteroidX(targetId) >= (ai.mapWidthPixels() / 2):
+                px = ai.mapWidthPixels() - (selfX - ai.asteroidX(targetId))
+            else:
+                px = ai.asteroidX(targetId) - selfX
+        else:
+            if ai.asteroidX(targetId) - selfX >= (ai.mapWidthPixels() / 2):
+                px = -(ai.mapWidthPixels() - (ai.asteroidX(targetId) - selfX))
+            else:
+                px = ai.asteroidX(targetId) - selfX
+
+        if selfY > ai.mapHeightPixels() / 2:
+            if selfY - ai.asteroidY(targetId) >= (ai.mapHeightPixels() / 2):
+                py = ai.mapHeightPixels() - (selfY - ai.asteroidY(targetId))
+            else:
+                py = ai.asteroidY(targetId) - selfY
+        else:
+            if ai.asteroidY(targetId) - selfY >= (ai.mapHeightPixels() / 2):
+                py = -(ai.mapHeightPixels() - (ai.asteroidY(targetId) - selfY))
+            else:
+                py = ai.asteroidY(targetId) - selfY
+
+        vx = ai.asteroidVelX(targetId) - selfVelX
+        vy = ai.asteroidVelY(targetId) - selfVelY
 
         # FOR TROUBLE SHOOTING
         #current_time = time.strftime("%H:%M:%S")
         #text_file = open("Log.txt", "a")
         #text_file.write(str(ai.radarDist(targetId)) + " " + current_time + "\n")
 
+        #mönster: den skjuter alltid rätt från vänster sida av mappen och
+
         selfHeading = ai.selfHeadingRad()
 
         bulletspeedx = (30 * math.cos(selfHeading)) + selfSpeed
         bulletspeedy = (30 * math.sin(selfHeading)) + selfSpeed
         bulletspeed = ( (bulletspeedx ** 2) + (bulletspeedy ** 2) ) ** (1 / 2)
-
-        relAsteroidDistX = (ai.asteroidX(targetId) - ai.selfX())
-        relAsteroidDistY = (ai.asteroidY(targetId) - ai.selfY())
-
-        px = 0
-        py = 0
-        vx = 0
-        vy = 0
-
-        if relAsteroidDistX > (ai.mapWidthPixels() / 2):
-            px = relAsteroidDistX - ai.mapWidthPixels()
-        else:
-            px = relAsteroidDistX
-
-        if relAsteroidDistY > (ai.mapHeightPixels() / 2):
-            py = relAsteroidDistY - ai.mapHeightPixels()
-        else:
-            py = relAsteroidDistY
-
-        vx = ai.asteroidVelX(targetId) - selfVelX
-        vy = ai.asteroidVelY(targetId) - selfVelY
-
 
 
         s = bulletspeed
