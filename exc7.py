@@ -18,7 +18,10 @@ selfTracking = None
 visibleItems = None
 visiblePlayers = []
 latestChatMessage = None
-# add more if needed
+missionstarted = False
+instructionstack = []
+finishedinstructions = []
+chatmessages = []
 
 def tick():
     #
@@ -40,17 +43,18 @@ def tick():
         global visibleItems
         global visiblePlayers
         global latestChatMessage
+        global missionstarted
+        global instructionstack
+        global finishedinstructions
+        global chatmessages
 
-        #
-        # Reset the state machine if we die.
-        #
+
         if not ai.selfAlive():
             tickCount = 0
             mode = "ready"
             return
 
         tickCount += 1
-
 
         selfX = ai.selfX()
         selfY = ai.selfY()
@@ -62,22 +66,37 @@ def tick():
         selfTracking = ai.selfTrackingRad()
         selfHeading = ai.selfHeadingRad()
         visibleItems = ai.itemCountScreen()
+
+        for i in range(10):
+            if ai.scanGameMsg(i) not in chatmessages:
+                chatmessages.append(ai.scanGameMsg(i))
+
         latestChatMessage = ai.scanGameMsg(0)
-        selfHeading = ai.selfHeadingRad()
 
-
+        for message in chatmessages:
+            if "move" in message and "completed" not in message and message not in instructionstack and message not in finishedinstructions:
+                instructionstack.append(message)
 
         visiblePlayers = []
         for i in range(ai.shipCountScreen()):
             visiblePlayers.append(ai.playerName(i))
 
-        interpretMessage(latestChatMessage)
+        if instructionstack:
+            interpretMessage(instructionstack[-1])
+
+        if not missionstarted:
+            ai.talk("teacherbot: start-mission 7")
+            missionstarted = True
 
         if mode == "ready":
             pass
 
+        if tickCount % 60 == 0:
+            print(str(len(instructionstack)))
+
 
     except:
+        print(instructionstack)
         print(traceback.print_exc())
 
 
@@ -106,8 +125,9 @@ def sendMessage(message):
         ai.talk(message)
 
 def interpretMessage(message):
-    if "move-to-pass" in message.lower():
-        message = message.replace("move-to-pass", "")
+    if "move-to-pass" in message.lower() or "move-to-stop" in message.lower():
+        moveinstruction = message[:12]
+        message = message.replace(moveinstruction, "")
         message = message.strip()
 
         xcoords = ""
@@ -147,28 +167,34 @@ def navigateTo(xcoords, ycoords):
     targetY = int(ycoords) - selfY
 
     targetdistance = ( ( targetX ** 2) + ( targetY ** 2) ) ** (1 / 2)
-    print(targetdistance)
     targetDirection = math.atan2(targetY, targetX)
 
-    if targetdistance > 200:
-        ai.turnToRad(targetDirection)
-        ai.setPower(55)
-        ai.thrust()
-    else:
-        if targetdistance > 50:
-            ai.turnToRad(targetDirection)
-            ai.setPower(30)
+
+    if targetdistance < 3000:
+        if selfSpeed > 10:
+            ai.turnToRad(velocityvector + math.pi)
+            ai.setPower(55)
             ai.thrust()
         else:
-            if selfSpeed < 2:
-                if tickCount % 2 == 0:
-                    ai.talk("completed move-to-pass " + str(xcoords) + " " + str(ycoords))
-            else:
-                ai.turnToRad(velocityvector + math.pi)
-                ai.setPower(20)
-                ai.thrust()
+            ai.turnToRad(targetDirection)
+            ai.setPower(15)
+            ai.thrust()
+    else:
+        ai.turnToRad(targetDirection)
+        ai.setPower(20)
+        ai.thrust()
 
-    print(selfX, selfY)
+    if targetdistance < 150 and selfSpeed < 8:
+        if tickCount % 2 == 0:
+            ai.talk("teacherbot:" + "completed " + instructionstack[-1])
+            finishedinstructions.append(instructionstack[-1])
+            instructionstack.pop(-1)
+
+    if tickCount % 20 == 0:
+        print("distance: " + str(targetdistance))
+        print("position: " + str(selfX) + ", " + str(selfY))
+        print(selfSpeed)
+        print("\n")
 
 
 def distanceTo(dist1, dist2):
@@ -176,7 +202,6 @@ def distanceTo(dist1, dist2):
         return dist1 - dist2
     else:
         return dist2 - dist1
-    #return max(dist1, dist2) - min(dist1, dist2)
 
 parser = OptionParser()
 
