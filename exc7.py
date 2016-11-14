@@ -134,7 +134,7 @@ def interpretMessage(message):
         for char in message:
             if char == " ":
                 break
-            if char in "0123456789":
+            if type(char) is int or type(char) is float:
                 xcoords += char
 
         message = message.replace(xcoords, "")
@@ -144,7 +144,7 @@ def interpretMessage(message):
         for char in message:
             if char == " ":
                 break
-            if char in "0123456789":
+            if type(char) is int or type(char) is float
                 ycoords += char
 
         navigateTo(xcoords, ycoords)
