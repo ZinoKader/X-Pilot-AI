@@ -24,6 +24,8 @@ visibleItems = None
 visiblePlayers = []
 latestChatMessage = None
 missionstarted = None
+
+itemRequests = {"mine" : 0, "missile" : 0, "fuel" : 0, "emergencyshield" : 0, "laser" : 0, "armor" : 0, "phasing" : 0}
 mine_id = 8
 missile_id = 9
 fuel_id = 0
@@ -58,6 +60,7 @@ def tick():
         global visiblePlayers
         global latestChatMessage
         global missionstarted
+        global itemRequests
 
         if not ai.selfAlive():
             tickCount = 0
@@ -75,12 +78,10 @@ def tick():
         selfTracking = ai.selfTrackingRad()
         selfHeading = ai.selfHeadingRad()
         visibleItems = ai.itemCountScreen()
-        latestChatMessage = ai.scanGameMsg(0)
         selfHeading = ai.selfHeadingRad()
 
-        visiblePlayers = []
-        for i in range(ai.shipCountScreen()):
-            visiblePlayers.append(ai.playerName(i))
+        latestChatMessage = ai.scanGameMsg(0)
+
 
         interpretMessage(latestChatMessage)
 
@@ -150,6 +151,8 @@ def interpretMessage(message):
                 navigateTo(targetX, targetY, targetVelX, targetVelY)
                 break
 
+def getInventoryItems(itemId):
+    return ai.selfItem(itemId)
 
 def navigateTo(targetX, targetY, targetVelX, targetVelY):
 
