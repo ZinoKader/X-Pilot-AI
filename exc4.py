@@ -82,15 +82,7 @@ def tick():
             distancelist[relDistance] = i
 
         targetId = distancelist.get(min(distancelist))
-        """
-        relAsteroidDistX = (ai.asteroidX(targetId) - ai.selfX())
-        if selfX > ai.mapWidthPixels():
-            relAsteroidDistX = ai.selfX() - ai.asteroidX(targetId)
 
-        relAsteroidDistY = (ai.asteroidY(targetId) - ai.selfY())
-        if selfY > ai.mapHeightPixels():
-            relAsteroidDistY = ai.selfY() - ai.asteroidY(targetId)
-        """
         if selfX > ai.mapWidthPixels() / 2:
             if selfX - ai.asteroidX(targetId) >= (ai.mapWidthPixels() / 2):
                 px = ai.mapWidthPixels() - (selfX - ai.asteroidX(targetId))

@@ -1,6 +1,7 @@
 import sys
 import traceback
 import math
+import random
 import libpyAI as ai
 from optparse import OptionParser
 
@@ -13,6 +14,8 @@ selfSpeed = None
 velocityvector = None
 selfX = None
 selfY = None
+selfVelX = None
+selfVelY = None
 targetX = None
 targetY = None
 selfHeading = None
@@ -20,7 +23,15 @@ selfTracking = None
 visibleItems = None
 visiblePlayers = []
 latestChatMessage = None
-# add more if needed
+missionstarted = None
+mine_id = 8
+missile_id = 9
+fuel_id = 0
+emergencyshield_id = 15
+laser_id = 11
+armor_id = 20
+phasing_id = 18
+
 
 def tick():
     #
@@ -35,6 +46,8 @@ def tick():
         global mode
         global selfX
         global selfY
+        global selfVelX
+        global selfVelY
         global targetX
         global targetY
         global selfSpeed
@@ -44,26 +57,14 @@ def tick():
         global visibleItems
         global visiblePlayers
         global latestChatMessage
+        global missionstarted
 
-
-        mine_id = 8
-        missile_id = 9
-        fuel_id = 15
-        missile = 9
-        fuel = 15
-        laser = 11
-        armor = 20
-        #
-        # Reset the state machine if we die.
-        #
         if not ai.selfAlive():
             tickCount = 0
             mode = "ready"
             return
 
         tickCount += 1
-
-
         selfX = ai.selfX()
         selfY = ai.selfY()
         selfVelX = ai.selfVelX()
@@ -77,16 +78,18 @@ def tick():
         latestChatMessage = ai.scanGameMsg(0)
         selfHeading = ai.selfHeadingRad()
 
-
         visiblePlayers = []
         for i in range(ai.shipCountScreen()):
             visiblePlayers.append(ai.playerName(i))
 
         interpretMessage(latestChatMessage)
 
+        if not missionstarted:
+            ai.talk("teacherbot: start-mission 8")
+            missionstarted = True
+
         if mode == "ready":
             pass
-
 
     except:
         print(traceback.print_exc())
@@ -121,89 +124,60 @@ def interpretMessage(message):
     global targetX
     global targetY
 
-    if "move-to-pass" in message.lower():
-        message = message.replace("move-to-pass", "")
-        message = message.strip()
+    itemtype = None
 
-        xcoords = ""
-        for char in message:
-            if char == " ":
-                break
-            if char in "0123456789":
-                xcoords += char
+    if "collect-item" in message.lower():
 
-        message = message.replace(xcoords, "")
-        message = message.strip()
-
-        ycoords = ""
-        for char in message:
-            if char == " ":
-                break
-            if char in "0123456789":
-                ycoords += char
-
-        navigateTo(xcoords, ycoords)
-
-    if "coord" in message.lower():
-        sendMessage(getCoordinates())
-    if "heading" in message.lower():
-        sendMessage(getHeading())
-    if "tracking" in message.lower():
-        sendMessage(getTracking())
-    if "item" in message.lower():
-        sendMessage(getVisibleItems())
-    if "player" in message.lower():
-        sendMessage(getVisiblePlayers())
-    if message.lower() in ["mine", "missile", "fuel", "emergencyshield", "laser", "armor"]:
-        print("FUCK")
-        message = message.replace("collect-item", "")
-        itemtype = message.strip()
+        if "mine" in message.lower():
+            itemtype = mine_id
+        if "missile" in message.lower():
+            itemtype = missile_id
+        if "fuel" in message.lower():
+            itemtype = fuel_id
+        if "emergencyshield" in message.lower():
+            itemtype = emergencyshield_id
+        if "armor" in message.lower():
+            itemtype = armor_id
+        if "phasing" in message.lower():
+            itemtype = phasing_id
 
         for i in range(ai.itemCountScreen()):
             if ai.itemType(i) == itemtype:
                 targetX = ai.itemX(i)
                 targetY = ai.itemY(i)
-                navigateTo(targetX, targetY)
+                targetVelX = ai.itemVelX(i)
+                targetVelY = ai.itemVelY(i)
+                navigateTo(targetX, targetY, targetVelX, targetVelY)
                 break
 
 
+def navigateTo(targetX, targetY, targetVelX, targetVelY):
 
-def navigateTo(xcoords, ycoords):
-
-    targetX = int(xcoords) - selfX
-    targetY = int(ycoords) - selfY
+    targetX = targetX - selfX
+    targetY = targetY - selfY
+    vx = targetVelX - selfVelX
+    vy = targetVelY - selfVelY
 
     targetdistance = ( ( targetX ** 2) + ( targetY ** 2) ) ** (1 / 2)
-    print(targetdistance)
-    targetDirection = math.atan2(targetY, targetX)
 
-    if targetdistance > 200:
-        ai.turnToRad(targetDirection)
-        ai.setPower(55)
-        ai.thrust()
-    else:
-        if targetdistance > 50:
-            ai.turnToRad(targetDirection)
-            ai.setPower(30)
-            ai.thrust()
-        else:
-            if selfSpeed < 2:
-                if tickCount % 2 == 0:
-                    ai.talk("completed move-to-pass " + str(xcoords) + " " + str(ycoords))
-            else:
-                ai.turnToRad(velocityvector + math.pi)
-                ai.setPower(20)
-                ai.thrust()
+    #a power of 45 (default) gives an acceleration of 0.1 pixels/tick^2 (with no friction)
+    acceleration = 0.1 / 3
+    ai.setPower(15)
 
-    print(selfX, selfY)
+    time_one = (-selfSpeed / acceleration) + math.sqrt(((selfSpeed ** 2) / (acceleration ** 2)) + ((2 * targetdistance) / acceleration))
+    time_two = (-selfSpeed / acceleration) - math.sqrt(((selfSpeed ** 2) / (acceleration ** 2)) + ((2 * targetdistance) / acceleration))
+
+    time = max(time_one, time_two)
+
+    uppe = targetY + (vy * time)
+    nere = targetX + (vx * time)
+
+    aimDirection = math.atan2(uppe, nere)
+
+    ai.turnToRad(aimDirection)
+    ai.thrust()
 
 
-def distanceTo(dist1, dist2):
-    if dist1 > dist2:
-        return dist1 - dist2
-    else:
-        return dist2 - dist1
-    #return max(dist1, dist2) - min(dist1, dist2)
 
 parser = OptionParser()
 
@@ -214,7 +188,24 @@ parser.add_option ("-p", "--port", action="store", type="int",
 
 (options, args) = parser.parse_args()
 
-name = "Stub"
+
+def time_of_impact(px, py, vx, vy, s):
+
+    a = (s * s) - ( (vx * vx) + (vy * vy) )
+    b = (px * vx) + (py * vy)
+    c = (px * px) + (py * py)
+
+    d = (b * b) + (a * c)
+
+    t = 0
+    if d >= 0:
+        t = (b + math.sqrt(d)) / a
+        if t < 0:
+            t = 0
+    return t
+
+
+name = "Stub" +  str(random.randint(0,9999))
 
 #
 # Start the AI
