@@ -18,6 +18,8 @@ selfVelX = None
 selfVelY = None
 targetX = None
 targetY = None
+targetVelX = None
+targetVelY = None
 selfHeading = None
 selfTracking = None
 visibleItems = None
@@ -52,6 +54,8 @@ def tick():
         global selfVelY
         global targetX
         global targetY
+        global targetVelX
+        global targetVelY
         global selfSpeed
         global selfHeading
         global selfTracking
@@ -81,16 +85,70 @@ def tick():
         selfHeading = ai.selfHeadingRad()
 
         latestChatMessage = ai.scanGameMsg(0)
-
-
         interpretMessage(latestChatMessage)
 
         if not missionstarted:
             ai.talk("teacherbot: start-mission 8")
             missionstarted = True
 
+        if not latestChatMessage:
+            handleItem("escape")
+
         if mode == "ready":
             pass
+
+        elif mode == "escape":
+            targetX = targetX - selfX
+            targetY = targetY - selfY
+            relTargetVelX = targetVelX - selfVelX
+            relTargetVelY = targetVelY - selfVelY
+            targetdistance = ( ( targetX ** 2) + ( targetY ** 2) ) ** (1 / 2)
+            acceleration = 0.1 / 2.25
+            ai.setPower(20)
+
+            time_one = (-selfSpeed / acceleration) + math.sqrt(((selfSpeed ** 2) / (acceleration ** 2)) + ((2 * targetdistance) / acceleration))
+            time_two = (-selfSpeed / acceleration) - math.sqrt(((selfSpeed ** 2) / (acceleration ** 2)) + ((2 * targetdistance) / acceleration))
+
+            time = max(time_one, time_two)
+
+            uppe = targetY + (relTargetVelY * time)
+            nere = targetX + (relTargetVelX * time)
+
+            aimDirection = math.atan2(uppe, nere)
+
+            ai.turnToRad(aimDirection + math.pi)
+            ai.thrust()
+
+
+        elif mode == "thrust":
+            targetX = targetX - selfX
+            targetY = targetY - selfY
+            relTargetVelX = targetVelX - selfVelX
+            relTargetVelY = targetVelY - selfVelY
+
+            targetdistance = ( ( targetX ** 2) + ( targetY ** 2) ) ** (1 / 2)
+
+            #a power of 45 (default) gives an acceleration of 0.1 pixels/tick^2 (with no friction)
+            #we put the ship on one side of the map, took the time that the ship took to get to the other side
+            #and worked out the acceleration (0.1) from there.
+            acceleration = 0.1 / 3
+            ai.setPower(15)
+
+            time_one = (-selfSpeed / acceleration) + math.sqrt(((selfSpeed ** 2) / (acceleration ** 2)) + ((2 * targetdistance) / acceleration))
+            time_two = (-selfSpeed / acceleration) - math.sqrt(((selfSpeed ** 2) / (acceleration ** 2)) + ((2 * targetdistance) / acceleration))
+
+            time = max(time_one, time_two)
+
+            uppe = targetY + (relTargetVelY * time)
+            nere = targetX + (relTargetVelX * time)
+
+            aimDirection = math.atan2(uppe, nere)
+
+            ai.turnToRad(aimDirection)
+            ai.thrust()
+
+        print(mode)
+
 
     except:
         print(traceback.print_exc())
@@ -122,91 +180,62 @@ def sendMessage(message):
 
 def interpretMessage(message):
 
+    if "collect-item" in message.lower():
+        handleItem(message.lower())
+
+def handleItem(message):
+    global mode
     global targetX
     global targetY
+    global targetVelX
+    global targetVelY
 
-    itemtype = None
+    if "mine" in message.lower():
+        itemtype = mine_id
+    if "missile" in message.lower():
+        itemtype = missile_id
+    if "fuel" in message.lower():
+        itemtype = fuel_id
+    if "emergencyshield" in message.lower():
+        itemtype = emergencyshield_id
+    if "armor" in message.lower():
+        itemtype = armor_id
+    if "phasing" in message.lower():
+        itemtype = phasing_id
 
-    if "collect-item" in message.lower():
+    itemdistance = {}
+    for i in range(ai.itemCountScreen()):
+        itemdistance[ai.itemDist(i)] = i
+    closestitem = itemdistance.get(min(itemdistance))
 
-        if "mine" in message.lower():
-            itemtype = mine_id
-        if "missile" in message.lower():
-            itemtype = missile_id
-        if "fuel" in message.lower():
-            itemtype = fuel_id
-        if "emergencyshield" in message.lower():
-            itemtype = emergencyshield_id
-        if "armor" in message.lower():
-            itemtype = armor_id
-        if "phasing" in message.lower():
-            itemtype = phasing_id
-
-        for i in range(ai.itemCountScreen()):
-            if ai.itemType(i) == itemtype:
-                targetX = ai.itemX(i)
-                targetY = ai.itemY(i)
-                targetVelX = ai.itemVelX(i)
-                targetVelY = ai.itemVelY(i)
-                navigateTo(targetX, targetY, targetVelX, targetVelY)
+    if "escape" in message.lower() or (ai.itemDist(closestitem) < 80 and ai.itemType(closestitem) != itemtype):
+        targetX = ai.itemX(closestitem)
+        targetY = ai.itemX(closestitem)
+        targetVelX = ai.itemVelX(closestitem)
+        targetVelY = ai.itemVelY(closestitem)
+        mode = "escape"
+    else:
+        for itemindex in range(ai.itemCountScreen()):
+            if ai.itemType(itemindex) == itemtype:
+                targetX = ai.itemX(itemindex)
+                targetY = ai.itemY(itemindex)
+                targetVelX = ai.itemVelX(itemindex)
+                targetVelY = ai.itemVelY(itemindex)
+                mode = "thrust"
                 break
+            else:
+                mode = "ready"
 
 def getInventoryItems(itemId):
     return ai.selfItem(itemId)
 
-def navigateTo(targetX, targetY, targetVelX, targetVelY):
-
-    targetX = targetX - selfX
-    targetY = targetY - selfY
-    vx = targetVelX - selfVelX
-    vy = targetVelY - selfVelY
-
-    targetdistance = ( ( targetX ** 2) + ( targetY ** 2) ) ** (1 / 2)
-
-    #a power of 45 (default) gives an acceleration of 0.1 pixels/tick^2 (with no friction)
-    acceleration = 0.1 / 3
-    ai.setPower(15)
-
-    time_one = (-selfSpeed / acceleration) + math.sqrt(((selfSpeed ** 2) / (acceleration ** 2)) + ((2 * targetdistance) / acceleration))
-    time_two = (-selfSpeed / acceleration) - math.sqrt(((selfSpeed ** 2) / (acceleration ** 2)) + ((2 * targetdistance) / acceleration))
-
-    time = max(time_one, time_two)
-
-    uppe = targetY + (vy * time)
-    nere = targetX + (vx * time)
-
-    aimDirection = math.atan2(uppe, nere)
-
-    ai.turnToRad(aimDirection)
-    ai.thrust()
-
-
-
 parser = OptionParser()
-
 parser.add_option ("-p", "--port", action="store", type="int",
                    dest="port", default=15345,
                    help="The port number. Used to avoid port collisions when"
                    " connecting to the server.")
 
 (options, args) = parser.parse_args()
-
-
-def time_of_impact(px, py, vx, vy, s):
-
-    a = (s * s) - ( (vx * vx) + (vy * vy) )
-    b = (px * vx) + (py * vy)
-    c = (px * px) + (py * py)
-
-    d = (b * b) + (a * c)
-
-    t = 0
-    if d >= 0:
-        t = (b + math.sqrt(d)) / a
-        if t < 0:
-            t = 0
-    return t
-
 
 name = "Stub" +  str(random.randint(0,9999))
 
