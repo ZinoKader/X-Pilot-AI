@@ -5,9 +5,6 @@ import random
 import libpyAI as ai
 from optparse import OptionParser
 
-#
-# Global variables that persist between ticks
-#
 tickCount = 0
 mode = "ready"
 selfSpeed = None
@@ -26,8 +23,17 @@ visibleItems = None
 visiblePlayers = []
 latestChatMessage = None
 missionstarted = None
+currenttask = None
+instructionstack = []
 
-itemRequests = {"mine" : 0, "missile" : 0, "fuel" : 0, "emergencyshield" : 0, "laser" : 0, "armor" : 0, "phasing" : 0}
+minecount = 0
+missilecount = 0
+emergencyshieldcount = 0
+armorcount = 0
+lasercount = 0
+fuelcount = 0
+phasingcount = 0
+
 mine_id = 8
 missile_id = 9
 fuel_id = 0
@@ -36,16 +42,9 @@ laser_id = 11
 armor_id = 20
 phasing_id = 18
 
-
 def tick():
-    #
-    # The API won't print out exceptions, so we have to catch and print them ourselves.
-    #
-    try:
 
-        #
-        # Declare global variables so we have access to them in the function
-        #
+    try:
         global tickCount
         global mode
         global selfX
@@ -64,7 +63,15 @@ def tick():
         global visiblePlayers
         global latestChatMessage
         global missionstarted
-        global itemRequests
+        global instructionstack
+        global currenttask
+        global minecount
+        global missilecount
+        global emergencyshieldcount
+        global armorcount
+        global lasercount
+        global fuelcount
+        global phasingcount
 
         if not ai.selfAlive():
             tickCount = 0
@@ -84,15 +91,63 @@ def tick():
         visibleItems = ai.itemCountScreen()
         selfHeading = ai.selfHeadingRad()
 
-        latestChatMessage = ai.scanGameMsg(0)
-        interpretMessage(latestChatMessage)
-
         if not missionstarted:
             ai.talk("teacherbot: start-mission 8")
             missionstarted = True
 
-        if not latestChatMessage:
-            handleItem("escape")
+        chatmessages = []
+        for i in range(10):
+            if "collect-item" in ai.scanGameMsg(i) and "completed" not in ai.scanGameMsg(i):
+                chatmessages.append(ai.scanGameMsg(i))
+
+        for i in range(10):
+            ai.removeTalkMsg(i)
+
+        for message in chatmessages:
+            if "collect-item" in message and "completed" not in message:
+                instructionstack.append(message)
+
+        if not currenttask:
+            currenttask = instructionstack[0]
+            instructionstack.pop(0)
+            if "mine" in currenttask:
+                minecount = ai.itemCount(getItemIndex("mine"))
+            if "missile" in currenttask:
+                missilecount = ai.itemCount(getItemIndex("missile"))
+            if "fuel" in currenttask:
+                fuelcount = ai.itemCount(getItemIndex("fuel"))
+            if "emergencyshield" in currenttask:
+                emergencyshieldcount = ai.itemCount(getItemIndex("emergencyshield"))
+            if "armor" in currenttask:
+                armorcount = ai.itemCount(getItemIndex("armor"))
+            if "phasing" in currenttask:
+                phasingcount = ai.itemCount(getItemIndex("phasing"))
+            if "laser" in currenttask:
+                lasercount = ai.itemCount(getItemIndex("laser"))
+
+        if ai.selfItem( getItemIndex( getItemName(currenttask) ) ) != minecount:
+            ai.talk("teacherbot:completed collect-item mine")
+            currenttask = None
+        elif ai.selfItem( getItemIndex( getItemName(currenttask) ) ) != missilecount:
+            ai.talk("teacherbot:completed collect-item missile")
+            currenttask = None
+        elif ai.selfItem( getItemIndex( getItemName(currenttask) ) ) != fuelcount:
+            ai.talk("teacherbot:completed collect-item fuel")
+            currenttask = None
+        elif ai.selfItem( getItemIndex( getItemName(currenttask) ) ) != emergencyshieldcount:
+            ai.talk("teacherbot:completed collect-item emergencyshield")
+            currenttask = None
+        elif ai.selfItem( getItemIndex( getItemName(currenttask) ) ) != armorcount:
+            ai.talk("teacherbot:completed collect-item armor")
+            currenttask = None
+        elif ai.selfItem( getItemIndex( getItemName(currenttask) ) ) != phasingcount:
+            ai.talk("teacherbot:completed collect-item phasing")
+            currenttask = None
+
+        if currenttask:
+            interpretMessage(currenttask)
+
+        print(instructionstack)
 
         if mode == "ready":
             pass
@@ -131,7 +186,7 @@ def tick():
             #a power of 45 (default) gives an acceleration of 0.1 pixels/tick^2 (with no friction)
             #we put the ship on one side of the map, took the time that the ship took to get to the other side
             #and worked out the acceleration (0.1) from there.
-            acceleration = 0.1 / 3
+            acceleration = 0.1 / 3 # möjligen (0.1 / 3) * (1 - friktion)
             ai.setPower(15)
 
             time_one = (-selfSpeed / acceleration) + math.sqrt(((selfSpeed ** 2) / (acceleration ** 2)) + ((2 * targetdistance) / acceleration))
@@ -152,7 +207,6 @@ def tick():
 
     except:
         print(traceback.print_exc())
-
 
 
 def getCoordinates():
@@ -178,10 +232,40 @@ def sendMessage(message):
         message = str(message)
         ai.talk(message)
 
-def interpretMessage(message):
+def getItemName(currenttask):
+    if "fuel" in currenttask:
+        return "fuel"
+    if "mine" in currenttask:
+        return "mine"
+    if "missile" in currenttask:
+        return "missile"
+    if "emergencyshield" in currenttask:
+        return "emergencyshield"
+    if "laser" in currenttask:
+        return "laser"
+    if "armor" in currenttask:
+        return "armor"
+    if "phasing" in currenttask:
+        return "phasing"
 
-    if "collect-item" in message.lower():
-        handleItem(message.lower())
+def getItemIndex(itemname):
+    if itemname == "fuel":
+        return 0
+    if itemname == "mine":
+        return 8
+    if itemname == "missile":
+        return 9
+    if itemname == "emergencyshield":
+        return 15
+    if itemname == "laser":
+        return 11
+    if itemname == "armor":
+        return 20
+    if itemname == "phasing":
+        return 18
+
+def interpretMessage(message):
+    handleItem(message.lower())
 
 def handleItem(message):
     global mode
@@ -226,8 +310,7 @@ def handleItem(message):
             else:
                 mode = "ready"
 
-def getInventoryItems(itemId):
-    return ai.selfItem(itemId)
+
 
 parser = OptionParser()
 parser.add_option ("-p", "--port", action="store", type="int",
