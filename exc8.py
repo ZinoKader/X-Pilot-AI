@@ -111,37 +111,41 @@ def tick():
             currenttask = instructionstack[0]
             instructionstack.pop(0)
             if "mine" in currenttask:
-                minecount = ai.itemCount(getItemIndex("mine"))
+                minecount = ai.selfItem(getItemIndex("mine"))
             if "missile" in currenttask:
-                missilecount = ai.itemCount(getItemIndex("missile"))
+                missilecount = ai.selfItem(getItemIndex("missile"))
             if "fuel" in currenttask:
-                fuelcount = ai.itemCount(getItemIndex("fuel"))
+                fuelcount = ai.selfItem(getItemIndex("fuel"))
+                ai.thrust() # to make sure fuelcount changes before next tick
             if "emergencyshield" in currenttask:
-                emergencyshieldcount = ai.itemCount(getItemIndex("emergencyshield"))
+                emergencyshieldcount = ai.selfItem(getItemIndex("emergencyshield"))
             if "armor" in currenttask:
-                armorcount = ai.itemCount(getItemIndex("armor"))
+                armorcount = ai.selfItem(getItemIndex("armor"))
             if "phasing" in currenttask:
-                phasingcount = ai.itemCount(getItemIndex("phasing"))
+                phasingcount = ai.selfItem(getItemIndex("phasing"))
             if "laser" in currenttask:
-                lasercount = ai.itemCount(getItemIndex("laser"))
+                lasercount = ai.selfItem(getItemIndex("laser"))
 
-        if ai.selfItem( getItemIndex( getItemName(currenttask) ) ) != minecount:
+        if "mine" in currenttask and ai.selfItem( getItemIndex( getItemName(currenttask) ) ) != minecount:
             ai.talk("teacherbot:completed collect-item mine")
             currenttask = None
-        elif ai.selfItem( getItemIndex( getItemName(currenttask) ) ) != missilecount:
+        elif "missile" in currenttask and ai.selfItem( getItemIndex( getItemName(currenttask) ) ) != missilecount:
             ai.talk("teacherbot:completed collect-item missile")
             currenttask = None
-        elif ai.selfItem( getItemIndex( getItemName(currenttask) ) ) != fuelcount:
+        elif "fuel" in currenttask and ai.selfItem( getItemIndex( getItemName(currenttask) ) ) != fuelcount:
             ai.talk("teacherbot:completed collect-item fuel")
             currenttask = None
-        elif ai.selfItem( getItemIndex( getItemName(currenttask) ) ) != emergencyshieldcount:
+        elif "emergencyshield" in currenttask and ai.selfItem( getItemIndex( getItemName(currenttask) ) ) != emergencyshieldcount:
             ai.talk("teacherbot:completed collect-item emergencyshield")
             currenttask = None
-        elif ai.selfItem( getItemIndex( getItemName(currenttask) ) ) != armorcount:
+        elif "armor" in currenttask and ai.selfItem( getItemIndex( getItemName(currenttask) ) ) != armorcount:
             ai.talk("teacherbot:completed collect-item armor")
             currenttask = None
-        elif ai.selfItem( getItemIndex( getItemName(currenttask) ) ) != phasingcount:
+        elif "phasing" in currenttask and ai.selfItem( getItemIndex( getItemName(currenttask) ) ) != phasingcount:
             ai.talk("teacherbot:completed collect-item phasing")
+            currenttask = None
+        elif "laser" in currenttask and ai.selfItem( getItemIndex( getItemName(currenttask) ) ) != lasercount:
+            ai.talk("teacherbot:completed collect-item laser")
             currenttask = None
 
         if currenttask:
@@ -286,6 +290,8 @@ def handleItem(message):
         itemtype = armor_id
     if "phasing" in message.lower():
         itemtype = phasing_id
+    if "laser" in message.lower():
+        itemtype = laser_id
 
     itemdistance = {}
     for i in range(ai.itemCountScreen()):
