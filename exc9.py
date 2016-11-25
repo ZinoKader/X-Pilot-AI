@@ -326,15 +326,16 @@ def handleItem(message):
 
 
     else: #use item on player "XXXYYY"
-        player_name = objective.replace("use-item " + getItemName(objective), "").split()
+        item_name = getItemName(objective)
+        player_name = objective.replace("use-item " + getItemName(objective), "").split()[0] # remove junk from name, leaving only letters
         player_id = None
-        for i in range(ai.shipCountScreen()):
-            if player_name.lower() == ai.playerName(ai.shipId(i)):
+        for i in range(ai.playerCountServer()):
+            if str(player_name).lower() == ai.playerName(i):
                 player_id = i
 
-        target_shipX = ai.shipX(i) - selfX
-        target_shipY = ai.shipY(i) - selfY
-        
+        target_shipX = ai.shipX(player_id) - selfX
+        target_shipY = ai.shipY(player_id) - selfY
+        print(target_shipX)
 
     itemdistance = {}
     for i in range(ai.itemCountScreen()):
