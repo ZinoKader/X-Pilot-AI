@@ -347,17 +347,17 @@ def handleItem(message):
 
 
         if ai.selfItem(itemtype) > 0:
-                navigateTo(xcoords, ycoords)
-                if "mine" in objective:
-                    if targetdistance < 100:
-                        if not minedetached:
-                            minedetached = True
-                            ai.detachMine()
-                if minedetached:
-                    ai.detonateMines()
-                    minedetached = False # reset for next mine instruction
-                    ai.talk("teacherbot: completed use mine")
-                    currenttask = None
+            navigateTo(xcoords, ycoords)
+            if "mine" in objective:
+                if targetdistance < 100:
+                    if not minedetached:
+                        minedetached = True
+                        ai.detachMine()
+            if minedetached:
+                ai.detonateMines()
+                minedetached = False # reset for next mine instruction
+                ai.talk("teacherbot: completed use mine")
+                currenttask = None
         else:
             shouldgetitem = True
 
@@ -387,18 +387,25 @@ def handleItem(message):
             target_shipX = ai.shipX(ship_id) - selfX
             target_shipY = ai.shipY(ship_id) - selfY
             targetdistance = ( ( target_shipX ** 2) + ( target_shipY ** 2) ) ** (1 / 2)
-            navigateTo(target_shipX, target_shipY)
+
             if "mine" in objective:
                 if targetdistance < 100:
                     if not minedetached:
                         minedetached = True
                         ai.detachMine()
+                else:
+                    navigateTo(target_shipX, target_shipY)
             if minedetached:
                 ai.detonateMines()
                 minedetached = False # reset for next mine instruction
                 ai.talk("teacherbot: completed use mine")
                 currenttask = None
-        elif ai.selfItem(itemtype) < 1:
+
+            if "missile" in objective:
+                ai.turnToRad(math.atan2(target_shipY, target_shipX))
+                ai.fireTorpedo()
+
+        if ai.selfItem(itemtype) < 1:
             shouldgetitem = True
 
 
