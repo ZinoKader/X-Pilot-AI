@@ -42,6 +42,7 @@ laser_id = 11
 armor_id = 20
 phasing_id = 18
 
+shouldgetitem = False
 minedetached = False
 
 def tick():
@@ -257,11 +258,16 @@ def interpretMessage(message):
 def handleItem(message):
     global mode
     global currenttask
+    global shouldgetitem
     global targetX
     global targetY
     global targetVelX
     global targetVelY
     global minedetached
+    global fireMissile
+    global fireTorpedo
+    global fireHeat
+
 
     objective = message.lower().split("[")[0]
     print(objective)
@@ -281,12 +287,40 @@ def handleItem(message):
     if "laser" in objective:
         itemtype = laser_id
 
-    if "self" in objective: #use item on self
+    if shouldgetitem:
+        itemdistance = {}
+        for i in range(ai.itemCountScreen()):
+            itemdistance[ai.itemDist(i)] = i
+            closestitem = itemdistance.get(min(itemdistance))
+
+            if (ai.itemDist(closestitem) < 80 and ai.itemType(closestitem) != itemtype):
+                targetX = ai.itemX(closestitem)
+                targetY = ai.itemX(closestitem)
+                targetVelX = ai.itemVelX(closestitem)
+                targetVelY = ai.itemVelY(closestitem)
+                mode = "escape"
+            else:
+                for itemindex in range(ai.itemCountScreen()):
+                    if ai.itemType(itemindex) == itemtype:
+                        targetX = ai.itemX(itemindex)
+                        targetY = ai.itemY(itemindex)
+                        targetVelX = ai.itemVelX(itemindex)
+                        targetVelY = ai.itemVelY(itemindex)
+                        mode = "thrust"
+                        break
+                    else:
+                        mode = "ready"
+        if ai.selfItem(itemtype) >= 1:
+            shouldgetitem = False
+
+    elif "self" in objective: #use item on self
         if ai.selfItem(itemtype) > 0:
             if "emergencyshield" in objective:
                 ai.emergencyshield()
             if "armor" in objective:
                 ai.armor()
+        else:
+            shouldgetitem = True
     elif any(char.isdigit() for char in objective): #use item at xxx, yyy
         coordinates = objective.replace("use-item " + getItemName(objective), "").strip()
         xcoords = ""
@@ -311,54 +345,62 @@ def handleItem(message):
             xcoords += 50
             ycoords += 50
 
+
         if ai.selfItem(itemtype) > 0:
-            navigateTo(xcoords, ycoords)
-            if "mine" in objective:
-                if targetdistance < 100:
-                    if not minedetached:
-                        minedetached = True
-                        ai.detachMine()
+                navigateTo(xcoords, ycoords)
+                if "mine" in objective:
+                    if targetdistance < 100:
+                        if not minedetached:
+                            minedetached = True
+                            ai.detachMine()
                 if minedetached:
                     ai.detonateMines()
                     minedetached = False # reset for next mine instruction
                     ai.talk("teacherbot: completed use mine")
                     currenttask = None
+        else:
+            shouldgetitem = True
 
 
-    else: #use item on player "XXXYYY"
+    elif not any(char.isdigit() for char in objective) and "self" not in objective: #use item on player "XXXYYY"
         item_name = getItemName(objective)
         player_name = objective.replace("use-item " + getItemName(objective), "").split()[0] # remove junk from name, leaving only letters
-        player_id = None
+        ship_id = None
+        target_shipX = None
+        target_shipY = None
+        print(player_name)
+
         for i in range(ai.playerCountServer()):
-            if str(player_name).lower() == ai.playerName(i):
-                player_id = i
+            for y in range(ai.shipCountScreen()):
+                player_id = ai.playerId(i)
+                ship_id = ai.shipId(y)
+                if player_id == ship_id and str(player_name) == ai.playerName(i):
+                    ship_id = ai.shipId(y)
 
-        target_shipX = ai.shipX(player_id) - selfX
-        target_shipY = ai.shipY(player_id) - selfY
-        print(target_shipX)
+        try:
+            target_shipX = ai.shipX(ship_id) - selfX
+            target_shipY = ai.shipY(ship_id) - selfY
+        except TypeError as e:
+            ship_id = None
 
-    itemdistance = {}
-    for i in range(ai.itemCountScreen()):
-        itemdistance[ai.itemDist(i)] = i
-    closestitem = itemdistance.get(min(itemdistance))
+        if ship_id and ai.selfItem(itemtype) > 0:
+            target_shipX = ai.shipX(ship_id) - selfX
+            target_shipY = ai.shipY(ship_id) - selfY
+            targetdistance = ( ( target_shipX ** 2) + ( target_shipY ** 2) ) ** (1 / 2)
+            navigateTo(target_shipX, target_shipY)
+            if "mine" in objective:
+                if targetdistance < 100:
+                    if not minedetached:
+                        minedetached = True
+                        ai.detachMine()
+            if minedetached:
+                ai.detonateMines()
+                minedetached = False # reset for next mine instruction
+                ai.talk("teacherbot: completed use mine")
+                currenttask = None
+        elif ai.selfItem(itemtype) < 1:
+            shouldgetitem = True
 
-    if (ai.itemDist(closestitem) < 80 and ai.itemType(closestitem) != itemtype):
-        targetX = ai.itemX(closestitem)
-        targetY = ai.itemX(closestitem)
-        targetVelX = ai.itemVelX(closestitem)
-        targetVelY = ai.itemVelY(closestitem)
-        mode = "escape"
-    else:
-        for itemindex in range(ai.itemCountScreen()):
-            if ai.itemType(itemindex) == itemtype:
-                targetX = ai.itemX(itemindex)
-                targetY = ai.itemY(itemindex)
-                targetVelX = ai.itemVelX(itemindex)
-                targetVelY = ai.itemVelY(itemindex)
-                mode = "thrust"
-                break
-            else:
-                mode = "ready"
 
 def checkCompleted():
     global currenttask
@@ -413,6 +455,29 @@ def navigateTo(xcoords, ycoords):
         print("position: " + str(selfX) + ", " + str(selfY))
         print(selfSpeed)
         print("\n")
+
+def angleDiff(one, two):
+    """Calculates the smallest angle between two angles"""
+
+    a1 = (one - two) % (2*math.pi)
+    a2 = (two - one) % (2*math.pi)
+    return min(a1, a2)
+
+def time_of_impact(px, py, vx, vy, s):
+
+    a = (s * s) - ( (vx * vx) + (vy * vy) )
+    b = (px * vx) + (py * vy)
+    c = (px * px) + (py * py)
+
+    d = (b * b) + (a * c)
+
+    t = 0
+    if d >= 0:
+        t = (b + math.sqrt(d)) / a
+        if t < 0:
+            t = 0
+    return t
+
 
 
 parser = OptionParser()
