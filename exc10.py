@@ -151,6 +151,8 @@ def navigateTo(xcoords, ycoords):
     targetdistance = ( ( targetX ** 2) + ( targetY ** 2) ) ** (1 / 2)
     targetDirection = math.atan2(targetY, targetX)
 
+
+    #använd wall_between från ai för att skanna av mappen och skapa ett grid som astar kan ta in och processera
     astar.next_move((selfX, selfY),(targetX, targetY), grid)
 
 
