@@ -1,9 +1,12 @@
 import sys
+sys.path.append('/pathfinding')
 import traceback
 import math
 import libpyAI as ai
 from optparse import OptionParser
-import astarimpl as astar
+import pathfinders as pf
+import tilemap as tm
+import maphelper
 
 tickCount = 0
 mode = "ready"
@@ -70,15 +73,11 @@ def tick():
             if "move" in message and "completed" not in message and message not in instructionstack and message not in finishedinstructions:
                 instructionstack.append(message)
 
-        visiblePlayers = []
-        for i in range(ai.shipCountScreen()):
-            visiblePlayers.append(ai.playerName(i))
-
         if instructionstack:
             interpretMessage(instructionstack[-1])
 
         if not missionstarted:
-            ai.talk("teacherbot: start-mission 7")
+            ai.talk("teacherbot: start-mission 10")
             missionstarted = True
 
         if mode == "ready":
@@ -86,6 +85,11 @@ def tick():
 
         if tickCount % 60 == 0:
             print(str(len(instructionstack)))
+
+        maphandler = maphelper.MapHandler(ai)
+        maphandler.create_tile_map()
+
+        print(tile_map)
 
 
     except:
@@ -153,6 +157,7 @@ def navigateTo(xcoords, ycoords):
 
 
     #använd wall_between från ai för att skanna av mappen och skapa ett grid som astar kan ta in och processera
+    #kolla i map
     astar.next_move((selfX, selfY),(targetX, targetY), grid)
 
 
