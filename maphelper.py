@@ -27,10 +27,10 @@ class MapHandler(self, ai):
         path = pf.a_star(maplist, start, end) # start kan ex. vara (3, 0) och end kan vara (3, 6) (x, y)
         return path
 
-    def block_to_coords(self, blockx, blocky):
+    def block_to_coords(self, block):
         # dessa blir mellan 0 till 1
-        block_number_x = blockx / self.map_block_width # t.ex. 15 / 30 för mellersta blocket
-        block_number_y = blocky / self.map_block_height # t.ex. 1 / 30 för blocket längst upp
+        block_number_x = block[0] / self.map_block_width # t.ex. 15 / 30 för mellersta blocket
+        block_number_y = block[1] / self.map_block_height # t.ex. 1 / 30 för blocket längst upp
 
         xcoords = block_number_x * ai.mapWidthPixels()
         ycoords = block_number_y * ai.mapHeightPixels()
