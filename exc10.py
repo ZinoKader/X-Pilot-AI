@@ -88,8 +88,12 @@ def tick():
 
         maphandler = maphelper.MapHandler(ai)
         maphandler.create_tile_map()
+        pathlist = maphandler.get_path()
 
-        print(tile_map)
+        next_move_coords = block_to_coords(pathlist[0][0], pathlist[0][1])
+        del(pathlist[0])
+
+        print(next_move)
 
 
     except:

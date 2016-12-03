@@ -7,11 +7,11 @@ class MapHandler(self, ai):
 
     def __init__(self):
         self.tilemap = ""
+        self.map_block_width = ai.mapWidthBlocks()
+        self.map_block_height = ai.mapHeightBlocks()
+        self.block_size = ai.blockSize()
 
     def create_tile_map(self):
-
-        map_block_width = ai.mapWidthBlocks()
-        map_block_height = ai.mapHeightBlocks()
 
         for x in map_block_width:
             for y in map_block_height:
@@ -25,3 +25,14 @@ class MapHandler(self, ai):
     def get_path(self, start, end):
         maplist = tm.str_to_map(self.tilemap)
         path = pf.a_star(maplist, start, end) # start kan ex. vara (3, 0) och end kan vara (3, 6) (x, y)
+        return path
+
+    def block_to_coords(self, blockx, blocky):
+        # dessa blir mellan 0 till 1
+        block_number_x = blockx / self.map_block_width # t.ex. 15 / 30 för mellersta blocket
+        block_number_y = blocky / self.map_block_height # t.ex. 1 / 30 för blocket längst upp
+
+        xcoords = block_number_x * ai.mapWidthPixels()
+        ycoords = block_number_y * ai.mapHeightPixels()
+
+        return (xcoords, ycoords)
