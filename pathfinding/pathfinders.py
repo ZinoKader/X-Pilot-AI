@@ -1,4 +1,4 @@
-import Queue
+import queue
 import graph
 
 # heuristic functions
@@ -39,8 +39,8 @@ def position_passable(g, position):
 
 # get the available neighbors of position
 def get_neighbors(g, position):
-    (x, ) = position
-    return [item for item in [(x-1, y), x+1, y), x, -1), x, y+1)] if position_passable(g, item)]
+    (x,y) = position
+    return [item for item in [(x-1, y), (x+1, y), (x, y-1), (x, y+1)] if position_passable(g, item)]
 
 
 # reconstructs path from a came_from dict, a startpoint, and an endpoint
@@ -48,7 +48,6 @@ def reconstruct_path(came_from, start, end):
     path = []
     current = end
     while current != start:
-        #print current
         path.insert(0, current)
         current = came_from[current]
     else:
@@ -58,7 +57,7 @@ def reconstruct_path(came_from, start, end):
 
 # standard BFS from startpoint to endpoint.
 def breadth_first_search(g, start, end):
-    frontier = Queue.Queue()
+    frontier = queue.queue()
     if position_passable(g, start):
         frontier.put(start)
         came_from = {start: None}
@@ -82,7 +81,7 @@ def breadth_first_search(g, start, end):
 # dijkstra's algorithm
 # like standard BFS, but uses a priority queue instead of a normal queue to find paths by cost
 def dijkstra(g, start, end):
-    frontier = Queue.PriorityQueue()
+    frontier = queue.PriorityQueue()
     if position_passable(g, start):
         frontier.put((0, start))
         came_from = {start: None}
@@ -115,7 +114,7 @@ def greedy_best_first_search(g, start, end, heuristic='default'):
         heuristic = 'default'
     heuristic = heuristic_fns[heuristic]
 
-    frontier = Queue.PriorityQueue()
+    frontier = queue.PriorityQueue()
     if position_passable(g, start):
         frontier.put((0, tart))
         came_from = {start:None}
@@ -146,9 +145,9 @@ def a_star(g, start, end, heuristic='default'):
         heuristic = 'default'
     heuristic = heuristic_fns[heuristic]
 
-    frontier = Queue.PriorityQueue()
-    if position_passable(g, start): 
-        frontier.put((0, tart)) # aka open set
+    frontier = queue.PriorityQueue()
+    if position_passable(g, start):
+        frontier.put((0, start)) # aka open set
         came_from = {start:None} # doubles as the closed set
         past_dist = {start:0} # aka the past score g(x)
     else:
@@ -169,7 +168,7 @@ def a_star(g, start, end, heuristic='default'):
             tentative_past_dist = past_dist[current] + g[neighbor[1]][neighbor[0]]
             if neighbor not in came_from or past_dist[neighbor] > tentative_past_dist:
                 # insert into frontier by priority of lower overall_tentative_dist
-                heuristic_dist = heuristic(neighbor, nd)
+                heuristic_dist = heuristic(neighbor, end)
                 overall_tentative_dist = tentative_past_dist + heuristic_dist
 
                 frontier.put((overall_tentative_dist, neighbor))

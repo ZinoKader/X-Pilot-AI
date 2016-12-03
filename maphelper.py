@@ -3,9 +3,10 @@ sys.path.append('/pathfinding')
 import pathfinders as pf
 import tilemap as tm
 
-class MapHandler(self, ai):
+class MapHandler:
 
-    def __init__(self):
+    def __init__(self, ai):
+        self.ai = ai
         self.tilemap = ""
         self.map_block_width = ai.mapWidthBlocks()
         self.map_block_height = ai.mapHeightBlocks()
@@ -13,10 +14,11 @@ class MapHandler(self, ai):
 
     def create_tile_map(self):
 
-        for x in map_block_width:
-            for y in map_block_height:
+        for x in range(self.map_block_width):
+            for y in range(self.map_block_height):
+                empty_space_list_index = [0,30,40,50,60]
                 # https://www.ida.liu.se/~TDDD63/projects/2016/xpilot/mapdata.html
-                if ai.mapData(x, y) == 0: # ingen vägg (empty space)
+                if self.ai.mapData(x, y) in empty_space_list_index: # ingen vägg (empty space)
                     self.tilemap += "1"
                 else: # något annat än empty space, räkna det som vägg
                     self.tilemap += "X"
@@ -32,7 +34,13 @@ class MapHandler(self, ai):
         block_number_x = block[0] / self.map_block_width # t.ex. 15 / 30 för mellersta blocket
         block_number_y = block[1] / self.map_block_height # t.ex. 1 / 30 för blocket längst upp
 
-        xcoords = block_number_x * ai.mapWidthPixels()
-        ycoords = block_number_y * ai.mapHeightPixels()
+        xcoords = block_number_x * self.ai.mapWidthPixels()
+        ycoords = block_number_y * self.ai.mapHeightPixels()
 
-        return (xcoords, ycoords)
+        return (int(xcoords), int(ycoords))
+
+    def coords_to_block(self, x, y):
+        block_number_x = (x / self.ai.mapWidthPixels()) * self.map_block_width
+        block_number_y = (y / self.ai.mapHeightPixels()) * self.map_block_height
+
+        return (int(block_number_x), int(block_number_y))

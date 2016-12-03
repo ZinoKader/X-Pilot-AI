@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/pathfinding')
+sys.path.append('pathfinding')
 import traceback
 import math
 import libpyAI as ai
@@ -86,14 +86,23 @@ def tick():
         if tickCount % 60 == 0:
             print(str(len(instructionstack)))
 
+
         maphandler = maphelper.MapHandler(ai)
         maphandler.create_tile_map()
-        pathlist = maphandler.get_path()
+        self_block = maphandler.coords_to_block(selfX, selfY)
+        pathlist = maphandler.get_path(self_block,(30,30))
 
-        next_move_coords = block_to_coords(pathlist[0][0], pathlist[0][1])
+        next_move_coords = maphandler.block_to_coords((pathlist[0][0], pathlist[0][1]))
         del(pathlist[0])
 
-        print(next_move)
+        if tickCount % 10 == 0:
+            print("Current pos: " + str(selfX) + ", " + str(selfY))
+
+        if tickCount % 10 == 0:
+            print("NEXT MOVE: " + str(next_move_coords))
+
+        if tickCount % 10 == 0:
+            print("BLOCK SIZE: " + str(ai.blockSize()))
 
 
     except:
@@ -160,9 +169,9 @@ def navigateTo(xcoords, ycoords):
     targetDirection = math.atan2(targetY, targetX)
 
 
-    #använd wall_between från ai för att skanna av mappen och skapa ett grid som astar kan ta in och processera
+    #anvand wall_between fran ai för att skanna av mappen och skapa ett grid som astar kan ta in och processera
     #kolla i map
-    astar.next_move((selfX, selfY),(targetX, targetY), grid)
+    #astar.next_move((selfX, selfY),(targetX, targetY), grid)
 
 
 def distanceTo(dist1, dist2):
@@ -184,6 +193,6 @@ name = "Stub"
 
 ai.start(tick,["-name", name,
                "-join",
-               "-turnSpeed", "64",
+               "-turnSpeed", "3",
                "-turnResistance", "0",
                "-port", str(options.port)])

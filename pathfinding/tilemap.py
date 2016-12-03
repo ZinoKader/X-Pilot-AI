@@ -3,11 +3,11 @@ import sys, random
 # tilemap module
 
 def print_usage():
-    usage = '''usage: 
+    usage = '''usage:
 - python mapgen.py read [input_file]
 - python mapgen.py generate [output_file] [width] [height] [seed]
 '''
-    print usage
+    print(usage)
 
 # classifies a charater to a tile
 def char_to_tile(char):
@@ -22,7 +22,7 @@ def str_to_map(string):
     return [[char_to_tile(char) for char in line] for line in string.split('\n')]
 
 
-# reads a plaintext file into a map 
+# reads a plaintext file into a map
 def read_file_to_map(filename):
     with open(filename, 'r') as f:
         return string_to_map(f.read())
@@ -35,7 +35,7 @@ def generate(w,h,seed='X111122345'):
 
     tile_map = [[char_to_tile(random.choice(seed)) for i in xrange(w)] for j in xrange(h)]
     return tile_map
-        
+
 
 def generate_to_file(filename,w,h,seed='X111122345'):
     with open(filename, 'w') as f:
@@ -56,12 +56,12 @@ def map_to_str(grid, path=[]):
     return output
 
 def draw_map(grid, path=[]):
-    print map_to_string(grid,path)
+    print(map_to_string(grid,path))
 
 if __name__ == '__main__':
     try:
         if (sys.argv[1] == 'read'):
-            print read_file_to_map(sys.argv[2])
+            print(read_file_to_map(sys.argv[2]))
         elif (sys.argv[1] == 'generate'):
             generate(sys.argv[2],int(sys.argv[3]),int(sys.argv[4]),sys.argv[5])
         else:
