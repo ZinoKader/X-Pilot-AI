@@ -24,10 +24,6 @@ class MapHandler:
                     self.tilemap += "X"
             self.tilemap += "\n"
 
-        flippedtilemap = []
-        for char in tilemap:
-
-
         print(self.tilemap)
 
     def get_path(self, start, end):
