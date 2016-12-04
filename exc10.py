@@ -44,7 +44,7 @@ def tick():
         global instructionstack
         global finishedinstructions
         global chatmessages
-	global maphandler
+        global maphandler
 
 
         if not ai.selfAlive():
