@@ -89,20 +89,7 @@ def tick():
 
         maphandler = maphelper.MapHandler(ai)
         maphandler.create_tile_map()
-        self_block = maphandler.coords_to_block(selfX, selfY)
-        pathlist = maphandler.get_path(self_block,(30,30))
 
-        next_move_coords = maphandler.block_to_coords((pathlist[0][0], pathlist[0][1]))
-        del(pathlist[0])
-
-        if tickCount % 10 == 0:
-            print("Current pos: " + str(selfX) + ", " + str(selfY))
-
-        if tickCount % 10 == 0:
-            print("NEXT MOVE: " + str(next_move_coords))
-
-        if tickCount % 10 == 0:
-            print("BLOCK SIZE: " + str(ai.blockSize()))
 
 
     except:
@@ -165,13 +152,28 @@ def navigateTo(xcoords, ycoords):
     targetX = int(xcoords) - selfX
     targetY = int(ycoords) - selfY
 
+    self_block = maphandler.coords_to_block(selfX, selfY)
+    target_block = maphandler.coords_to_block(targetX, targetY)
+
+    pathlist = maphandler.get_path(self_block, target_block)
+
+    next_move_coords = maphandler.block_to_coords((pathlist[0][0], pathlist[0][1]))
+
     targetdistance = ( ( targetX ** 2) + ( targetY ** 2) ) ** (1 / 2)
-    targetDirection = math.atan2(targetY, targetX)
+    targetDirection = math.atan2(next_move_coords[0], next_move_coords[1])
+    ai.turnToRad(targetDirection)
+    ai.setPower(8)
+    ai.thrust()
 
 
-    #anvand wall_between fran ai för att skanna av mappen och skapa ett grid som astar kan ta in och processera
-    #kolla i map
-    #astar.next_move((selfX, selfY),(targetX, targetY), grid)
+    if tickCount % 10 == 0:
+        print("Current pos: " + str(selfX) + ", " + str(selfY))
+
+    if tickCount % 10 == 0:
+        print("NEXT MOVE: " + str(next_move_coords))
+
+    if tickCount % 10 == 0:
+        print("BLOCK SIZE: " + str(ai.blockSize()))
 
 
 def distanceTo(dist1, dist2):
