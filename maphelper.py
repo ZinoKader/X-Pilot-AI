@@ -14,8 +14,8 @@ class MapHandler:
 
     def create_tile_map(self):
 
-        for x in range(self.map_block_width):
-            for y in range(self.map_block_height):
+        for y in range(self.map_block_height):
+            for x in range(self.map_block_width):
                 #empty_space_list_index = [0,30,40,50,60]
                 # https://www.ida.liu.se/~TDDD63/projects/2016/xpilot/mapdata.html
                 if self.ai.mapData(x, y) != 1: # ingen vägg (empty space)
