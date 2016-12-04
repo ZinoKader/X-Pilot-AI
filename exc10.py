@@ -146,6 +146,8 @@ def interpretMessage(message):
             if char in "0123456789":
                 ycoords += char
 
+        print("SHIT")
+        print(xcoords, ycoords)
         navigateTo(xcoords, ycoords)
 
 
