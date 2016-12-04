@@ -159,8 +159,8 @@ def navigateTo(xcoords, ycoords):
     http://code.activestate.com/recipes/578919-python-a-pathfinding-with-binary-heap/
     """
 
-    targetX = int(xcoords) - selfX
-    targetY = int(ycoords) - selfY
+    targetX = int(xcoords)
+    targetY = int(ycoords)
 
     self_block = maphandler.coords_to_block(selfX, selfY)
     target_block = maphandler.coords_to_block(targetX, targetY)
