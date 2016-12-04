@@ -14,7 +14,7 @@ class MapHandler:
 
     def create_tile_map(self):
 
-        for y in range(self.map_block_height):
+        for y in range(self.map_block_height, 0, -1):
             for x in range(self.map_block_width):
                 #empty_space_list_index = [0,30,40,50,60]
                 # https://www.ida.liu.se/~TDDD63/projects/2016/xpilot/mapdata.html
@@ -23,6 +23,10 @@ class MapHandler:
                 else: # något annat än empty space, räkna det som vägg
                     self.tilemap += "X"
             self.tilemap += "\n"
+
+        flippedtilemap = []
+        for char in tilemap:
+
 
         print(self.tilemap)
 
