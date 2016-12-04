@@ -1,2 +1,1 @@
-    xpilots -map /home/TDDD63/www-pub/projects/2016/xpilot/maps/emptyborderlarge.xp -noQuit \
-    +reportToMetaServer -port 15392
+    xpilots -map /home/TDDD63/www-pub/projects/2016/xpilot/maps/emptyborderlarge.xp -noQuit +reportToMetaServer -port 15352

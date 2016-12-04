@@ -9,6 +9,7 @@ import tilemap as tm
 import maphelper
 
 maphandler = None
+pathlist = []
 tickCount = 0
 mode = "ready"
 selfSpeed = None
@@ -45,6 +46,7 @@ def tick():
         global finishedinstructions
         global chatmessages
         global maphandler
+        global pathlist
 
 
         if not ai.selfAlive():
@@ -146,9 +148,6 @@ def interpretMessage(message):
             if char in "0123456789":
                 ycoords += char
 
-        print("SHIT")
-        print(xcoords, ycoords)
-        print(selfX, selfY)
         navigateTo(xcoords, ycoords)
 
 
@@ -165,14 +164,15 @@ def navigateTo(xcoords, ycoords):
     self_block = maphandler.coords_to_block(selfX, selfY)
     target_block = maphandler.coords_to_block(targetX, targetY)
 
-    print(targetY)
-    print("selfblock " + str(self_block))
-    print("targetblock" + str(target_block))
-    pathlist = maphandler.get_path(self_block, target_block)
+    if not pathlist:
+        pathlist = maphandler.get_path(self_block, target_block)
 
-    next_move_coords = maphandler.block_to_coords((pathlist[0][0], pathlist[0][1]))
+    print(pathlist)
+    next_move_coords = maphandler.block_to_coords((pathlist[0][0] - selfX, pathlist[0][1] - selfY))
 
-    targetdistance = ( ( targetX ** 2) + ( targetY ** 2) ) ** (1 / 2)
+    if maphadler.coords_to_block(next_move_coords) == self_block:
+        del(pathlist[0])
+
     targetDirection = math.atan2(next_move_coords[0], next_move_coords[1])
     ai.turnToRad(targetDirection)
     ai.setPower(8)
