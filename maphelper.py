@@ -22,7 +22,9 @@ class MapHandler:
                     self.tilemap += "1"
                 else: # något annat än empty space, räkna det som vägg
                     self.tilemap += "X"
-            self.tilemap += "\n"
+        self.tilemap += "\n"
+
+        print(self.tilemap)
 
     def get_path(self, start, end):
         maplist = tm.str_to_map(self.tilemap)

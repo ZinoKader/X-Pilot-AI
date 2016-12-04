@@ -148,10 +148,16 @@ def interpretMessage(message):
 
         print("SHIT")
         print(xcoords, ycoords)
+        print(selfX, selfY)
         navigateTo(xcoords, ycoords)
 
 
 def navigateTo(xcoords, ycoords):
+
+    """
+    Testa denna också
+    http://code.activestate.com/recipes/578919-python-a-pathfinding-with-binary-heap/
+    """
 
     targetX = int(xcoords) - selfX
     targetY = int(ycoords) - selfY
