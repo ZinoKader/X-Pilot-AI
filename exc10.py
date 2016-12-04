@@ -152,6 +152,7 @@ def interpretMessage(message):
 
 
 def navigateTo(xcoords, ycoords):
+    global pathlist
 
     """
     Testa denna också
@@ -168,9 +169,10 @@ def navigateTo(xcoords, ycoords):
         pathlist = maphandler.get_path(self_block, target_block)
 
     print(pathlist)
-    next_move_coords = maphandler.block_to_coords((pathlist[0][0] - selfX, pathlist[0][1] - selfY))
+    next_move_block = (pathlist[0][0] - selfX, pathlist[0][1] - selfY)
+    next_move_coords = maphandler.block_to_coords(next_move_block)
 
-    if maphadler.coords_to_block(next_move_coords) == self_block:
+    if maphandler.coords_to_block(next_move_coords[0], next_move_coords[1]) == self_block:
         del(pathlist[0])
 
     targetDirection = math.atan2(next_move_coords[0], next_move_coords[1])
