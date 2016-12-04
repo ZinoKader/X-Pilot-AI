@@ -8,6 +8,7 @@ import pathfinders as pf
 import tilemap as tm
 import maphelper
 
+maphandler = None
 tickCount = 0
 mode = "ready"
 selfSpeed = None
@@ -43,6 +44,7 @@ def tick():
         global instructionstack
         global finishedinstructions
         global chatmessages
+	global maphandler
 
 
         if not ai.selfAlive():
