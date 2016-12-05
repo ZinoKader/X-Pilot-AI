@@ -403,7 +403,15 @@ def handleItem(message):
 
             if "missile" in objective:
                 ai.turnToRad(math.atan2(target_shipY, target_shipX))
-                ai.fireTorpedo()
+                ai.lockNextClose()
+                ai.fireMissile()
+                ai.talk("teacherbot: completed use missile")
+                currenttask = None
+
+            if "fuel" in objective:
+
+                ai.talk("teacherbot: completed use fuel self")
+                currenttask = None
 
         if ai.selfItem(itemtype) < 1:
             shouldgetitem = True
