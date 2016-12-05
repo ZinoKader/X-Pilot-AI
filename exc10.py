@@ -1,3 +1,10 @@
+#starting server with map xpilots
+#xpilot x-pilot$ xpilots -map /home/davgr135/Desktop/TDDD63/x-pilot/exc10_map_try.xp -noQuit \ +reportToMetaServer -port 15390
+
+
+
+
+
 import sys
 sys.path.append('pathfinding')
 import traceback
@@ -99,7 +106,8 @@ def tick():
     except:
         print(instructionstack)
         print(traceback.print_exc())
-
+        print(selfY)
+        print(selfX)
 
 
 def getCoordinates():
@@ -164,6 +172,7 @@ def navigateTo(xcoords, ycoords):
 
     self_block = maphandler.coords_to_block(selfX, selfY)
     target_block = maphandler.coords_to_block(targetX, targetY)
+
 
     if not pathlist:
         pathlist = maphandler.get_path(self_block, target_block)
