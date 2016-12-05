@@ -1,9 +1,5 @@
 #starting server with map xpilots
-#xpilot x-pilot$ xpilots -map /home/davgr135/Desktop/TDDD63/x-pilot/exc10_map_try.xp -noQuit \ +reportToMetaServer -port 15390
-
-
-
-
+#xpilots -map /home/davgr135/Desktop/TDDD63/x-pilot/exc10_map_try.xp -noQuit \ +reportToMetaServer -port 15390
 
 import sys
 sys.path.append('pathfinding')
@@ -183,6 +179,9 @@ def navigateTo(xcoords, ycoords):
 
     if maphandler.coords_to_block(next_move_coords[0], next_move_coords[1]) == self_block:
         del(pathlist[0])
+
+    print(next_move_coords[0])
+    print(next_move_coords[1])
 
     targetDirection = math.atan2(next_move_coords[0], next_move_coords[1])
     ai.turnToRad(targetDirection)
