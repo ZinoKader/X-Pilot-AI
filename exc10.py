@@ -84,7 +84,7 @@ def tick():
             interpretMessage(instructionstack[-1])
 
         if not missionstarted:
-            ai.talk("teacherbot: start-mission 10")
+            #ai.talk("teacherbot: start-mission 10")
             missionstarted = True
 
         if mode == "ready":
