@@ -1,5 +1,5 @@
 #starting server with map xpilots
-#xpilots -map /home/davgr135/Desktop/TDDD63/x-pilot/exc10_map_try.xp -noQuit \ +reportToMetaServer -port 15390
+#xpilots -map exc10_map_try.xp -noQuit \ +reportToMetaServer -port 15390
 
 import sys
 sys.path.append('pathfinding')
@@ -7,7 +7,7 @@ import traceback
 import math
 import libpyAI as ai
 from optparse import OptionParser
-import pathfinders as pf
+import binary_heap as pf
 import tilemap as tm
 import maphelper
 
@@ -84,7 +84,7 @@ def tick():
             interpretMessage(instructionstack[-1])
 
         if not missionstarted:
-            ai.talk("teacherbot: start-mission 10")
+            #ai.talk("teacherbot: start-mission 10")
             missionstarted = True
 
         if mode == "ready":
@@ -92,11 +92,10 @@ def tick():
 
         if tickCount % 60 == 0:
             print(str(len(instructionstack)))
-
+            print((selfX, selfY))
 
         maphandler = maphelper.MapHandler(ai)
         maphandler.create_tile_map()
-
 
 
     except:
@@ -169,34 +168,29 @@ def navigateTo(xcoords, ycoords):
     self_block = maphandler.coords_to_block(selfX, selfY)
     target_block = maphandler.coords_to_block(targetX, targetY)
 
+    pathlist = maphandler.get_path(self_block, target_block)
 
-    if not pathlist:
-        pathlist = maphandler.get_path(self_block, target_block)
-
-    print(pathlist)
-    next_move_block = (pathlist[0][0] - selfX, pathlist[0][1] - selfY)
+    next_move_block = (pathlist[-1][0], pathlist[-1][1])
     next_move_coords = maphandler.block_to_coords(next_move_block)
 
-    if maphandler.coords_to_block(next_move_coords[0], next_move_coords[1]) == self_block:
-        del(pathlist[0])
+    if tickCount % 20 == 0:
+        print(pathlist)
+        print("FUCK")
+        print(maphandler.coords_to_block(next_move_coords[0], next_move_coords[1]))
 
-    print(next_move_coords[0])
-    print(next_move_coords[1])
 
-    targetDirection = math.atan2(next_move_coords[0], next_move_coords[1])
+    targetDirection = math.atan2(next_move_coords[1] - selfY, next_move_coords[0] - selfX)
     ai.turnToRad(targetDirection)
-    ai.setPower(8)
+    ai.setPower(5)
     ai.thrust()
 
 
-    if tickCount % 10 == 0:
+    if tickCount % 50 == 0:
         print("Current pos: " + str(selfX) + ", " + str(selfY))
-
-    if tickCount % 10 == 0:
         print("NEXT MOVE: " + str(next_move_coords))
-
-    if tickCount % 10 == 0:
-        print("BLOCK SIZE: " + str(ai.blockSize()))
+        print("self block" + str(self_block))
+        print("target block" + str(target_block))
+        print("\n")
 
 
 def distanceTo(dist1, dist2):
@@ -218,6 +212,6 @@ name = "Stub"
 
 ai.start(tick,["-name", name,
                "-join",
-               "-turnSpeed", "3",
+               "-turnSpeed", "64",
                "-turnResistance", "0",
                "-port", str(options.port)])
