@@ -1,34 +1,32 @@
 import sys
 sys.path.append('/pathfinding')
-import pathfinders as pf
-import tilemap as tm
+import binary_heap as pf
 
 class MapHandler:
 
     def __init__(self, ai):
         self.ai = ai
-        self.tilemap = ""
+        self.tilemap = []
         self.map_block_width = ai.mapWidthBlocks()
         self.map_block_height = ai.mapHeightBlocks()
         self.block_size = ai.blockSize()
 
     def create_tile_map(self):
 
-        for y in range(self.map_block_height - 1, -1, -1):
+        for y in range(self.map_block_height):
+            tilemap_row = []
             for x in range(self.map_block_width):
-                #empty_space_list_index = [0,30,40,50,60]
-                # https://www.ida.liu.se/~TDDD63/projects/2016/xpilot/mapdata.html
-                if self.ai.mapData(x, y) != 1: # ingen vägg (empty space)
-                    self.tilemap += "1"
-                else: # något annat än empty space, räkna det som vägg
-                    self.tilemap += "X"
-            self.tilemap += "\n"
+                if self.ai.mapData(x, y) != 1:
+                    tilemap_row += [0]
+                else:
+                    tilemap_row += [1]
+            self.tilemap.append(tilemap_row)
 
-        #print(self.tilemap)
+        print(self.tilemap)
 
     def get_path(self, start, end):
-        maplist = tm.str_to_map(self.tilemap)
-        path = pf.a_star(maplist, start, end) # start kan ex. vara (3, 0) och end kan vara (3, 6) (x, y)
+        maplist = self.tilemap
+        path = pf.astar(maplist, start, end) # start kan ex. vara (3, 0) och end kan vara (3, 6) (x, y)
         return path
 
     def block_to_coords(self, block):
