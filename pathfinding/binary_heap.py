@@ -11,6 +11,7 @@ def heuristic(a, b):
 
 def astar(array, start, goal):
 
+    array = numpy.array(array)
     neighbors = [(0,1),(0,-1),(1,0),(-1,0),(1,1),(1,-1),(-1,1),(-1,-1)]
 
     close_set = set()
@@ -74,4 +75,3 @@ nmap = numpy.array([
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [1,1,1,1,1,1,1,1,1,1,1,1,0,1],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0]])
-    

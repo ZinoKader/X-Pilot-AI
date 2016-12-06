@@ -84,7 +84,7 @@ def tick():
             interpretMessage(instructionstack[-1])
 
         if not missionstarted:
-            #ai.talk("teacherbot: start-mission 10")
+            ai.talk("teacherbot: start-mission 10")
             missionstarted = True
 
         if mode == "ready":
@@ -94,9 +94,8 @@ def tick():
             print(str(len(instructionstack)))
             print((selfX, selfY))
 
-        if not maphandler:
-            maphandler = maphelper.MapHandler(ai)
-            maphandler.create_tile_map()
+        maphandler = maphelper.MapHandler(ai)
+        maphandler.create_tile_map()
 
 
     except:
@@ -169,32 +168,28 @@ def navigateTo(xcoords, ycoords):
     self_block = maphandler.coords_to_block(selfX, selfY)
     target_block = maphandler.coords_to_block(targetX, targetY)
 
-    if not pathlist:
-        pathlist = maphandler.get_path(self_block, target_block)
+    pathlist = maphandler.get_path(self_block, target_block)
 
-    next_move_block = (pathlist[0][0], pathlist[0][1])
+    next_move_block = (pathlist[-1][0], pathlist[-1][1])
     next_move_coords = maphandler.block_to_coords(next_move_block)
 
-    if tickCount % 60 == 0:
+    if tickCount % 20 == 0:
         print(pathlist)
         print("FUCK")
         print(maphandler.coords_to_block(next_move_coords[0], next_move_coords[1]))
 
-    if maphandler.coords_to_block(next_move_coords[0], next_move_coords[1]) == self_block:
-        del(pathlist[0])
 
-    targetDirection = math.atan2(next_move_coords[0] - selfX, next_move_coords[1] - selfY)
+    targetDirection = math.atan2(next_move_coords[1] - selfY, next_move_coords[0] - selfX)
     ai.turnToRad(targetDirection)
-    ai.setPower(8)
+    ai.setPower(5)
     ai.thrust()
 
 
-    if tickCount % 10 == 0:
+    if tickCount % 50 == 0:
         print("Current pos: " + str(selfX) + ", " + str(selfY))
         print("NEXT MOVE: " + str(next_move_coords))
-        print("BLOCK SIZE: " + str(ai.blockSize()))
-        print(self_block)
-        print(target_block)
+        print("self block" + str(self_block))
+        print("target block" + str(target_block))
         print("\n")
 
 
@@ -217,6 +212,6 @@ name = "Stub"
 
 ai.start(tick,["-name", name,
                "-join",
-               "-turnSpeed", "3",
+               "-turnSpeed", "64",
                "-turnResistance", "0",
                "-port", str(options.port)])
