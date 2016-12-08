@@ -30,8 +30,8 @@ class MapHandler:
 
     def block_to_coords(self, block):
         # dessa blir mellan 0 till 1
-        block_number_x = (block[0] - 1)/ self.map_block_width # t.ex. 15 / 30 för mellersta blocket
-        block_number_y = (block[1] - 1)/ self.map_block_height # t.ex. 1 / 30 för blocket längst upp
+        block_number_x = (block[0])/ self.map_block_width # t.ex. 15 / 30 för mellersta blocket
+        block_number_y = (block[1])/ self.map_block_height # t.ex. 1 / 30 för blocket längst upp
 
         xcoords = block_number_x * self.ai.mapWidthPixels()
         ycoords = block_number_y * self.ai.mapHeightPixels()
@@ -39,7 +39,7 @@ class MapHandler:
         return (int(xcoords), int(ycoords))
 
     def coords_to_block(self, x, y):
-        block_number_x =  1 + (x / self.ai.mapWidthPixels()) * self.map_block_width
-        block_number_y =  1 + (y / self.ai.mapHeightPixels()) * self.map_block_height
+        block_number_x =  (x / self.ai.mapWidthPixels()) * self.map_block_width
+        block_number_y =  (y / self.ai.mapHeightPixels()) * self.map_block_height
 
         return (int(block_number_x), int(block_number_y))

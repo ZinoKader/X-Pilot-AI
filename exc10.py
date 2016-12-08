@@ -212,6 +212,6 @@ name = "Stub"
 
 ai.start(tick,["-name", name,
                "-join",
-               "-turnSpeed", "64",
+               "-turnSpeed", "6",
                "-turnResistance", "0",
                "-port", str(options.port)])
