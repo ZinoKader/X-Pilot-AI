@@ -1,4 +1,4 @@
-global grid = []
+global grid
 
 def gridDistance(startPos, endPos):
     d = abs(startPos[0] - endPos[0]) + abs(startPos[1] - endPos[1])
@@ -69,7 +69,3 @@ def reconstructPath(cameFrom, current):
 
     # get the reverse array...
     return totalPath[::-1]
-
-
-if __name__ == "__main__":
-    print astar([9,3],[2,9])
