@@ -7,6 +7,7 @@ class MapHandler:
     def __init__(self, ai):
         self.ai = ai
         self.tilemap = []
+        self.pathmap = []
         self.map_block_width = ai.mapWidthBlocks()
         self.map_block_height = ai.mapHeightBlocks()
         self.block_size = ai.blockSize()
@@ -21,11 +22,14 @@ class MapHandler:
                 else:
                     tilemap_row += [1]
             self.tilemap.append(tilemap_row)
+            with open("tilemap", "a") as out:
+                out.write(str(tilemap_row) + "\n")
+
 
     def get_path(self, start, end):
-        maplist = self.tilemap
-        path = pf.astar(maplist, start, end) # start kan ex. vara (3, 0) och end kan vara (3, 6) (x, y)
-        print(path)
+        path = pf.astar(self.tilemap, start, end) # start kan ex. vara (3, 0) och end kan vara (3, 6) (x, y)
+        with open("pathlist", "a") as out:
+            out.write(str(path) + "\n")
         return path
 
     def block_to_coords(self, block):
