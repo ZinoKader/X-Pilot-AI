@@ -8,7 +8,6 @@ class MapHandler:
     def __init__(self, ai):
         self.ai = ai
         self.tilemap = []
-        self.pathmap = []
         self.map_block_width = ai.mapWidthBlocks()
         self.map_block_height = ai.mapHeightBlocks()
         self.block_size = ai.blockSize()
@@ -24,9 +23,16 @@ class MapHandler:
                     tilemap_row += [0] # Wall block
             self.tilemap.append(tilemap_row)
 
+    def is_wall(block):
+        blockx = block[0]
+        blocky = block[1]
+        iswall = self.tilemap[blocky][blockx]:
+        return iswall == 1 # 1 är vägg, True om blocket är en vägg
+
+
     def get_path(self, start, end):
-        finder = astar.pathfinder()
-        path = astar.astar(self.tilemap, start, end) # start kan ex. vara (3, 0) och end kan vara (3, 6) (x, y)
+        finder = astar.pathfinder(self.ai, astar.grid_neighbors(self.map_block_width - 1, self.map_block_height - 1))
+        path = finder(start, end)
         return path
 
     def block_to_coords(self, block):

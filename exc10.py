@@ -164,7 +164,9 @@ def navigateTo(xcoords, ycoords):
     target_block = maphandler.coords_to_block(targetX, targetY)
 
     pathlist = maphandler.get_path(self_block, target_block)
-    print("PATHLISTBOY: " + str(pathlist))
+    print(pathlist)
+
+    
     next_move_block = (pathlist[-1][0], pathlist[-1][1])
     next_move_coords = maphandler.block_to_coords(next_move_block)
 

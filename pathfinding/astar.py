@@ -27,6 +27,9 @@ the cost exceeded the specified maximum
 import math
 import maphelper
 
+global ai
+
+
 def manhattan_distance( start, end ):
     """
     Calculate the manhattan distance between two points.
@@ -56,7 +59,7 @@ def fixed_cost( cost ):
         return cost
     return func
 
-def grid_neighbors( height, width ):
+def grid_neighbors(height, width):
     """
     Calculate neighbors for a simple grid where
     a movement can be made up, down, left, or right.
@@ -72,29 +75,29 @@ def grid_neighbors( height, width ):
     [(1, 2), (1, 0), (2, 1), (0, 1)]
 
     """
-    def func( coord ):
+    def func(coord):
 
         maphandler = maphelper.MapHandler(ai)
         maphandler.create_tile_map()
-        self_block = maphandler.coords_to_block(selfX, selfY)
-        target_block = maphandler.coords_to_block(targetX, targetY)
-
+        block = maphandler.coords_to_block(coord[0], coord[1])
 
         neighbor_list = [ ( coord[ 0 ], coord[ 1 ] + 1),
                           ( coord[ 0 ], coord[ 1 ] - 1),
                           ( coord[ 0 ] + 1, coord[ 1 ]),
                           ( coord[ 0 ] - 1, coord[ 1 ])]
 
-        return [ c for c in neighbor_list
-                 if c != coord
-                 and c[0] >= 0 and c[0] < width
-                 and c[1] >= 0 and c[1] < height ]
+        neighbor_list_modified = neighbor_list
+
+        for neighbor in neighbor_list_modified:
+            tryblock = maphandler.coords_to_block(neighbor)
+            if maphandler.is_wall(tryblock):
+                neighbor_list.remove(neighbor)
+
+        return [ c for c in neighbor_list if c != coord and c[0] >= 0 and c[0] < width and c[1] >= 0 and c[1] < height ]
 
     return func
 
-def pathfinder( neighbors=grid_neighbors( 100, 100 ),
-                distance=absolute_distance,
-                cost=fixed_cost( 1 ) ):
+def pathfinder(myai, neighbors=grid_neighbors( 100, 100 )):
     """
     Find the shortest distance between two nodes in a graph using the
     astar algorithm. By default, the graph is a coordinate plane where
@@ -109,6 +112,11 @@ def pathfinder( neighbors=grid_neighbors( 100, 100 ),
     cost     - Callable that returns the cost to traverse
                between two given nodes.
     """
+    global ai
+    ai = myai
+
+    distance = absolute_distance,
+    cost = fixed_cost(1)
 
     def reconstruct_path( came_from, current_node ):
         """Reconstruct the path from a given node to the beginning"""
