@@ -1,7 +1,6 @@
 import sys
-sys.path.append('pathfinding/pypaths/pypaths')
-import binary_heap as pf
-from pypaths import astar
+sys.path.append('pathfinding')
+import astar
 
 class MapHandler:
 
