@@ -25,6 +25,7 @@ the cost exceeded the specified maximum
 """
 
 import math
+import maphelper
 
 def manhattan_distance( start, end ):
     """
@@ -72,6 +73,13 @@ def grid_neighbors( height, width ):
 
     """
     def func( coord ):
+
+        maphandler = maphelper.MapHandler(ai)
+        maphandler.create_tile_map()
+        self_block = maphandler.coords_to_block(selfX, selfY)
+        target_block = maphandler.coords_to_block(targetX, targetY)
+
+
         neighbor_list = [ ( coord[ 0 ], coord[ 1 ] + 1),
                           ( coord[ 0 ], coord[ 1 ] - 1),
                           ( coord[ 0 ] + 1, coord[ 1 ]),
@@ -81,16 +89,16 @@ def grid_neighbors( height, width ):
                  if c != coord
                  and c[0] >= 0 and c[0] < width
                  and c[1] >= 0 and c[1] < height ]
-    
+
     return func
 
 def pathfinder( neighbors=grid_neighbors( 100, 100 ),
                 distance=absolute_distance,
                 cost=fixed_cost( 1 ) ):
     """
-    Find the shortest distance between two nodes in a graph using the 
-    astar algorithm. By default, the graph is a coordinate plane where 
-    every node has the same cost and nodes can be traversed horizontally 
+    Find the shortest distance between two nodes in a graph using the
+    astar algorithm. By default, the graph is a coordinate plane where
+    every node has the same cost and nodes can be traversed horizontally
     and vertically.
 
     Keyword Arguments:
@@ -101,7 +109,7 @@ def pathfinder( neighbors=grid_neighbors( 100, 100 ),
     cost     - Callable that returns the cost to traverse
                between two given nodes.
     """
-    
+
     def reconstruct_path( came_from, current_node ):
         """Reconstruct the path from a given node to the beginning"""
         if current_node in came_from:
@@ -156,10 +164,5 @@ def pathfinder( neighbors=grid_neighbors( 100, 100 ),
                         open_set.add( neighbor )
 
         return None, []
-    
-    return func
 
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
-    
+    return func
