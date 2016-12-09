@@ -1,7 +1,7 @@
 import sys
-sys.path.append('/pathfinding')
+sys.path.append('pathfinding/pypaths/pypaths')
 import binary_heap as pf
-import AStar as astar
+from pypaths import astar
 
 class MapHandler:
 
@@ -25,6 +25,7 @@ class MapHandler:
             self.tilemap.append(tilemap_row)
 
     def get_path(self, start, end):
+        finder = astar.pathfinder()
         path = astar.astar(self.tilemap, start, end) # start kan ex. vara (3, 0) och end kan vara (3, 6) (x, y)
         return path
 

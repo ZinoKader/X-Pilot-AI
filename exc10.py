@@ -2,7 +2,6 @@
 #xpilots -map exc10_map_try.xp -noQuit \ +reportToMetaServer -port 15390
 
 import sys
-sys.path.append('pathfinding')
 import traceback
 import math
 import libpyAI as ai
