@@ -188,7 +188,7 @@ def navigateTo(xcoords, ycoords):
 
 
     if tickCount % 50 == 0:
-        #print("Current pos: " + str(selfX) + ", " + str(selfY))
+        print("Current pos: " + str(selfX) + ", " + str(selfY))
         print("self block" + str(self_block))
         print("NEXT MOVE: " + str(next_move_block))
         print("target block" + str(target_block))

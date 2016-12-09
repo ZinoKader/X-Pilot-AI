@@ -17,13 +17,12 @@ class MapHandler:
 
         for y in range(self.map_block_height - 1, -1, -1):
             tilemap_row = []
-            for x in range(self.map_block_width - 1):
+            for x in range(self.map_block_width):
                 if self.ai.mapData(x, y) != 1:
                     tilemap_row += [0]
                 else:
                     tilemap_row += [1]
             self.tilemap.append(tilemap_row)
-
 
     def get_path(self, start, end):
         path = pf.astar(self.tilemap, start, end) # start kan ex. vara (3, 0) och end kan vara (3, 6) (x, y)
@@ -40,7 +39,7 @@ class MapHandler:
         return (int(xcoords), int(ycoords))
 
     def coords_to_block(self, x, y):
-        block_number_x =  (x / self.ai.mapWidthPixels()) * (self.map_block_width)
-        block_number_y =  (y / self.ai.mapHeightPixels()) * (self.map_block_height)
+        block_number_x = (x / self.ai.mapWidthPixels()) * (self.map_block_width)
+        block_number_y = (y / self.ai.mapHeightPixels()) * (self.map_block_height)
 
         return (int(block_number_x), int(block_number_y))
