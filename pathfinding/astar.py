@@ -128,6 +128,7 @@ def pathfinder(myai, neighbors=grid_neighbors( 100, 100 )):
             return [ current_node ]
 
     def func( start, end, max_cost=None ):
+        print("START, END: " + str(start) + str(end))
         """
         Perform a-star pathfinding from a start to an
         end coordinate.
