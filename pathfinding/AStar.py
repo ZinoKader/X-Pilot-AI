@@ -68,4 +68,4 @@ def reconstructPath(cameFrom, current):
         totalPath.append(current)
 
     # get the reverse array...
-    return totalPath[::-1]
+    return totalPath
