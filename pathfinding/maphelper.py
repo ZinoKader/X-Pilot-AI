@@ -17,9 +17,9 @@ class MapHandler:
             tilemap_row = []
             for x in range(self.map_block_width):
                 if self.ai.mapData(x, y) != 1:
-                    tilemap_row += [1] # Empty space
+                    tilemap_row += [0] # Empty space
                 else:
-                    tilemap_row += [0] # Wall block
+                    tilemap_row += [1] # Wall block
             self.tilemap.append(tilemap_row)
 
     def is_wall(block):
@@ -27,7 +27,6 @@ class MapHandler:
         blocky = block[1]
         iswall = self.tilemap[blocky][blockx]:
         return iswall == 1 # 1 är vägg, True om blocket är en vägg
-
 
     def get_path(self, start, end):
         finder = astar.pathfinder(self.ai, astar.grid_neighbors(self.map_block_width - 1, self.map_block_height - 1))
