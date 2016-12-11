@@ -46,11 +46,14 @@ def draw_tile(graph, id, style, width):
     if id in graph.walls: r = "#" * width
     return r
 
-def draw_grid(graph, width=2, **style):
+def draw_grid(graph, width=1, **style):
     for y in range(graph.height):
+        grid_row = []
         for x in range(graph.width):
-            print("%%-%ds" % width % draw_tile(graph, (x, y), style, width), end="")
-        print()
+            tile = draw_tile(graph, (x, y), style, width)
+            grid_row.append(tile)
+        graph.append(grid_row)
+    print(graph)
 
 class SquareGrid:
     def __init__(self, width, height):
@@ -64,6 +67,12 @@ class SquareGrid:
 
     def passable(self, id):
         return id not in self.walls
+
+    def cost(self, current, next):
+        if not self.passable(next):
+            return 2
+        else:
+            return 1
 
     def neighbors(self, id):
         (x, y) = id
@@ -157,4 +166,4 @@ def a_star_search(graph, start, goal):
                 frontier.put(next, priority)
                 came_from[next] = current
 
-    return came_from, cost_so_far
+    return reconstruct_path(came_from, start, goal)

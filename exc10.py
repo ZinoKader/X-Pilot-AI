@@ -164,25 +164,20 @@ def navigateTo(xcoords, ycoords):
     target_block = maphandler.coords_to_block(targetX, targetY)
 
     pathlist = maphandler.get_path(self_block, target_block)
-    print(pathlist)
 
-    next_move_block = (pathlist[-1][0], pathlist[-1][1])
+    while self_block in pathlist:
+        pathlist.remove(self_block)
+
+    next_move_block = (pathlist[0][0], pathlist[0][1])
     next_move_coords = maphandler.block_to_coords(next_move_block)
 
-    if tickCount % 20 == 0:
-        pass
-        #print(pathlist)
-        #print(maphandler.coords_to_block(next_move_coords[0], next_move_coords[1]))
-
     targetDirection = math.atan2(next_move_coords[1] - selfY, next_move_coords[0] - selfX)
-    #ai.turnToRad(targetDirection)
-    #ai.setPower(5)
+    ai.turnToRad(targetDirection)
+    ai.setPower(7)
 
     angledifference = angleDiff(selfHeading, targetDirection)
     if angledifference < 0.05:
-        #ai.thrust()
-        pass
-
+        ai.thrust()
 
     if tickCount % 50 == 0:
         print("Current pos: " + str(selfX) + ", " + str(selfY))
@@ -220,6 +215,6 @@ name = "Stub"
 
 ai.start(tick,["-name", name,
                "-join",
-               "-turnSpeed", "6",
+               "-turnSpeed", "64",
                "-turnResistance", "0",
                "-port", str(options.port)])
