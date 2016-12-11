@@ -30,10 +30,12 @@ class MapHandler:
             self.tilemap.append(tilemap_row)
 
     def is_wall(block):
+        """
         blockx = block[0]
         blocky = block[1]
         iswall = self.tilemap[blocky][blockx]:
-        return iswall == 1 # 1 är vägg, True om blocket är en vägg
+            return iswall == 1 # 1 är vägg, True om blocket är en vägg
+        """
 
     def get_path(self, start, goal):
         """
