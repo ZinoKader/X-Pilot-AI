@@ -1,6 +1,7 @@
 import sys
 sys.path.append('pathfinding')
-import astar
+import astar as poopstar
+import implementation as astar
 
 class MapHandler:
 
@@ -10,6 +11,14 @@ class MapHandler:
         self.map_block_width = ai.mapWidthBlocks()
         self.map_block_height = ai.mapHeightBlocks()
         self.block_size = ai.blockSize()
+
+    def find_walls(self):
+        walls = []
+        for y in range(self.map_block_height - 1, -1, -1):
+            for x in range(self.map_block_width):
+                if self.ai.mapData(x, y) == 1:
+                    walls.append( (x, y) )
+        return walls
 
     def create_tile_map(self):
 
@@ -28,9 +37,14 @@ class MapHandler:
         iswall = self.tilemap[blocky][blockx]:
         return iswall == 1 # 1 är vägg, True om blocket är en vägg
 
-    def get_path(self, start, end):
+    def get_path(self, start, goal):
+        """
         finder = astar.pathfinder(self.ai, astar.grid_neighbors(self.map_block_width - 1, self.map_block_height - 1))
         path = finder(start, end)
+        """
+        mapgrid = astar.SquareGrid(32, 32)
+        mapgrid.walls = self.find_walls()
+        path = astar.a_star_search(mapgrid, start, goal)
         return path
 
     def block_to_coords(self, block):
