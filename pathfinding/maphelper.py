@@ -44,6 +44,7 @@ class MapHandler:
         """
         mapgrid = astar.SquareGrid(32, 32)
         mapgrid.walls = self.find_walls()
+        draw_grid(mapgrid)
         path = astar.a_star_search(mapgrid, start, goal)
         return path
 

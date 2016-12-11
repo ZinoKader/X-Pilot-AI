@@ -10,7 +10,7 @@ class SimpleGraph:
 
     def neighbors(self, id):
         return self.edges[id]
-        
+
 import collections
 
 class Queue:
@@ -72,6 +72,14 @@ class SquareGrid:
         results = filter(self.in_bounds, results)
         results = filter(self.passable, results)
         return results
+
+class GridWithWeights(SquareGrid):
+    def __init__(self, width, height):
+        super().__init__(width, height)
+        self.weights = {}
+
+    def cost(self, from_node, to_node):
+        return self.weights.get(to_node, 1)
 
 import heapq
 
