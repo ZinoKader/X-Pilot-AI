@@ -90,7 +90,6 @@ def tick():
 
         if not maphandler:
             maphandler = maphelper.MapHandler(ai)
-            maphandler.create_tile_map()
 
 
     except:
@@ -163,7 +162,8 @@ def navigateTo(xcoords, ycoords):
     self_block = maphandler.coords_to_block(selfX, selfY)
     target_block = maphandler.coords_to_block(targetX, targetY)
 
-    pathlist = maphandler.get_path(self_block, target_block)
+    if not pathlist:
+        pathlist = maphandler.get_path(self_block, target_block)
 
     while self_block in pathlist:
         pathlist.remove(self_block)
@@ -179,7 +179,7 @@ def navigateTo(xcoords, ycoords):
     if angledifference < 0.05:
         ai.thrust()
 
-    if tickCount % 50 == 0:
+    if tickCount % 20 == 0:
         print("Current pos: " + str(selfX) + ", " + str(selfY))
         print("self block" + str(self_block))
         print("NEXT MOVE: " + str(next_move_block))

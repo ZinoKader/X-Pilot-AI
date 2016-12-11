@@ -24,9 +24,9 @@ class MapHandler:
             tilemap_row = []
             for x in range(self.map_block_width):
                 if self.ai.mapData(x, y) != 1:
-                    tilemap_row += [0] # Empty space
+                    tilemap_row += [0] # Tomt block
                 else:
-                    tilemap_row += [1] # Wall block
+                    tilemap_row += [1] # Väggblock
             self.tilemap.append(tilemap_row)
 
     def is_wall(block):
@@ -55,7 +55,7 @@ class MapHandler:
         xcoords = block_number_x * self.ai.mapWidthPixels() + self.block_size / 2
         ycoords = block_number_y * self.ai.mapHeightPixels() + self.block_size / 2"""
 
-        xcoords = block[0] * self.block_size + (self.block_size / 2) # Add half block to get center coords
+        xcoords = block[0] * self.block_size + (self.block_size / 2) # Lägg till halvt block för att sikta på mitten av blocket
         ycoords = block[1] * self.block_size + (self.block_size / 2)
 
         return (int(xcoords), int(ycoords))
