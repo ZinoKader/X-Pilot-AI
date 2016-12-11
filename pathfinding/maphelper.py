@@ -1,4 +1,3 @@
-import astar as poopstar
 import implementation as astar
 
 class MapHandler:
