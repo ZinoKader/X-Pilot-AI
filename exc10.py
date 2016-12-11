@@ -2,6 +2,7 @@
 #xpilots -map exc10_map_try.xp -noQuit \ +reportToMetaServer -port 15390
 
 import sys
+sys.path.append('pathfinding')
 import traceback
 import math
 import libpyAI as ai
@@ -164,7 +165,6 @@ def navigateTo(xcoords, ycoords):
 
     pathlist = maphandler.get_path(self_block, target_block)
     print(pathlist)
-
 
     next_move_block = (pathlist[-1][0], pathlist[-1][1])
     next_move_coords = maphandler.block_to_coords(next_move_block)

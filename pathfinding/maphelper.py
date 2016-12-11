@@ -1,5 +1,3 @@
-import sys
-sys.path.append('pathfinding')
 import astar as poopstar
 import implementation as astar
 
