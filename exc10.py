@@ -1,5 +1,5 @@
 #starting server with map xpilots
-#xpilots -map exc10_map_try.xp -noQuit \ +reportToMetaServer -port 15390
+#xpilots -map maps/obstacle1.xp -noQuit \ +reportToMetaServer -port 15390
 
 import sys
 sys.path.append('pathfinding')
@@ -18,11 +18,15 @@ velocityvector = None
 selfX = None
 selfY = None
 selfHeading = None
+originalheading = None
+desiredheading = None
+escape_turned = False
 selfTracking = None
 visibleItems = None
 visiblePlayers = []
 latestChatMessage = None
 missionstarted = False
+missioncompleted = False
 instructionstack = []
 finishedinstructions = []
 chatmessages = []
@@ -33,6 +37,7 @@ def tick():
 
         global tickCount
         global mode
+        global escape_turned
         global selfX
         global selfY
         global selfSpeed
@@ -43,11 +48,14 @@ def tick():
         global visiblePlayers
         global latestChatMessage
         global missionstarted
+        global missioncompleted
         global instructionstack
         global finishedinstructions
         global chatmessages
         global maphandler
         global pathlist
+        global originalheading
+        global desiredheading
 
 
         if not ai.selfAlive():
@@ -77,35 +85,42 @@ def tick():
             if "move" in message and "completed" not in message and message not in instructionstack and message not in finishedinstructions:
                 instructionstack.append(message)
 
-        if instructionstack:
+        if instructionstack and mode == "ready":
             interpretMessage(instructionstack[-1])
 
-        if not missionstarted:
+        if not missionstarted and not missioncompleted:
             ai.talk("teacherbot: start-mission 10")
             missionstarted = True
 
         if not maphandler:
             maphandler = maphelper.MapHandler(ai)
 
-        if ai.wallFeelerRad(60, velocityvector) != -1: # om vägg är inom 60px av hastighetsvektorn
+        if ai.wallFeelerRad(50, selfHeading) != -1: # om vägg är inom 60px av hastighetsvektorn
             mode = "escapewall"
         else:
-            mode = "ready"    
+            mode = "ready"
 
         if mode == "ready":
-            pass
+            escape_turned = False # resetta för nästa escape event
+            originalheading = None
+            desiredheading = None
         elif mode == "escapewall":
-            ai.turnToRad(velocityvector + math.pi)
-            ai.setPower(20)
-            ai.thrust()
+            if not escape_turned:
+                escape_turned = True
+                print("ESCAAAAAAAAAAAAAAAAAAPEEEEE")
+                originalheading = velocityvector
+                desiredheading = originalheading + math.pi
+                ai.turnToRad(desiredheading)
+            else:
+                ai.turnToRad(desiredheading)
+                ai.setPower(55)
+                ai.thrust()
 
 
 
     except:
         print(instructionstack)
         print(traceback.print_exc())
-        print(selfY)
-        print(selfX)
 
 
 def getCoordinates():
@@ -144,7 +159,7 @@ def interpretMessage(message):
             if char in "0123456789":
                 xcoords += char
 
-        message = message.replace(xcoords, "")
+        message = message.replace(xcoords, "", 1) # ta bort en gång (ifall x och y-koordinaterna är samma)
         message = message.strip()
 
         ycoords = ""
@@ -159,6 +174,7 @@ def interpretMessage(message):
 
 def navigateTo(xcoords, ycoords):
     global pathlist
+    global missioncompleted
 
     """
     Testa denna också
@@ -171,8 +187,13 @@ def navigateTo(xcoords, ycoords):
     self_block = maphandler.coords_to_block(selfX, selfY)
     target_block = maphandler.coords_to_block(targetX, targetY)
 
+    if self_block == target_block and missionstarted and not missioncompleted:
+        missioncompleted = True
+        ai.talk("teacherbot: move-to-pass {}, {} completed".format(targetX, targetY))
+        print("navigation completed")
+
     # om vi hamnar på vilospår, hämta ny pathlist
-    if pathlist and self_block not in pathlist:
+    if self_block not in pathlist:
         pathlist = maphandler.get_path(self_block, target_block)
     elif not pathlist: # om vi inte hämtat ett spår än, gör det
         pathlist = maphandler.get_path(self_block, target_block)
@@ -180,25 +201,26 @@ def navigateTo(xcoords, ycoords):
     while self_block in pathlist: # förhindra att vi åker tillbaka (bugg)
         pathlist.remove(self_block)
 
-    next_move_block = (pathlist[0][0], pathlist[0][1])
-    next_move_coords = maphandler.block_to_coords(next_move_block)
+    if mode == "ready" and pathlist:
+        next_move_block = (pathlist[0][0], pathlist[0][1])
+        next_move_coords = maphandler.block_to_coords(next_move_block)
 
-    targetDirection = math.atan2(next_move_coords[1] - selfY, next_move_coords[0] - selfX)
-    ai.turnToRad(targetDirection)
-    ai.setPower(7)
+        targetDirection = math.atan2(next_move_coords[1] - selfY, next_move_coords[0] - selfX)
+        ai.turnToRad(targetDirection)
+        ai.setPower(8)
+        # thrusta endast när vi har nästa block i sikte så vi inte thrustar in i väggar
+        if angleDiff(selfHeading, targetDirection) < 0.1:
+            ai.thrust()
 
-    # thrusta endast när vi har nästa block i sikte så vi inte thrustar in i väggar
-    if angleDiff(selfHeading, targetDirection) < 0.05:
-        ai.thrust()
-
-    if tickCount % 20 == 0:
-        print("Current pos: " + str(selfX) + ", " + str(selfY))
-        print("self block" + str(self_block))
-        print("NEXT MOVE: " + str(next_move_block))
-        print("target block" + str(target_block))
-        print("--PATHLIST--")
-        print(pathlist)
-        print("\n")
+        if tickCount % 1 == 0:
+            print("mode: " + mode)
+            print("Current pos: " + str(selfX) + ", " + str(selfY))
+            print("self block" + str(self_block))
+            print("NEXT MOVE: " + str(next_move_block))
+            print("target block" + str(target_block))
+            print("--PATHLIST--")
+            print(pathlist)
+            print("\n")
 
 
 def distanceTo(dist1, dist2):
