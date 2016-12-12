@@ -162,10 +162,13 @@ def navigateTo(xcoords, ycoords):
     self_block = maphandler.coords_to_block(selfX, selfY)
     target_block = maphandler.coords_to_block(targetX, targetY)
 
-    if not pathlist:
+    # om vi hamnar på vilospår, hämta ny pathlist
+    if pathlist and self_block not in pathlist:
+        pathlist = maphandler.get_path(self_block, target_block)
+    elif not pathlist: # om vi inte hämtat ett spår än, gör det
         pathlist = maphandler.get_path(self_block, target_block)
 
-    while self_block in pathlist:
+    while self_block in pathlist: # förhindra att vi åker tillbaka (bugg)
         pathlist.remove(self_block)
 
     next_move_block = (pathlist[0][0], pathlist[0][1])
@@ -175,8 +178,8 @@ def navigateTo(xcoords, ycoords):
     ai.turnToRad(targetDirection)
     ai.setPower(7)
 
-    angledifference = angleDiff(selfHeading, targetDirection)
-    if angledifference < 0.05:
+    # thrusta endast när vi har nästa block i sikte så vi inte thrustar in i väggar
+    if angleDiff(selfHeading, targetDirection) < 0.05:
         ai.thrust()
 
     if tickCount % 20 == 0:
