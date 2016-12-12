@@ -52,7 +52,6 @@ def tick():
 
         if not ai.selfAlive():
             tickCount = 0
-            mode = "ready"
             return
 
         tickCount += 1
@@ -85,11 +84,21 @@ def tick():
             ai.talk("teacherbot: start-mission 10")
             missionstarted = True
 
-        if mode == "ready":
-            pass
-
         if not maphandler:
             maphandler = maphelper.MapHandler(ai)
+
+        if ai.wallFeelerRad(60, velocityvector) != -1: # om vägg är inom 60px av hastighetsvektorn
+            mode = "escapewall"
+        else:
+            mode = "ready"    
+
+        if mode == "ready":
+            pass
+        elif mode == "escapewall":
+            ai.turnToRad(velocityvector + math.pi)
+            ai.setPower(20)
+            ai.thrust()
+
 
 
     except:
