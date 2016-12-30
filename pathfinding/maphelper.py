@@ -6,7 +6,7 @@ class MapHandler:
         self.ai = ai
         self.tilemap = []
         self.map_block_width = ai.mapWidthBlocks()
-        self.map_block_height = ai.mapHeightBlocks()
+        self.map_block_height = ai.mapHeightBlocks() 
         self.block_size = ai.blockSize()
 
     def find_walls(self):
