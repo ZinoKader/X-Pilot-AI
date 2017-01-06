@@ -1,3 +1,5 @@
+import sys
+sys.path.append('pathfinding')
 from navigator import *
 
 class MultiGuyStateMachine(object):
