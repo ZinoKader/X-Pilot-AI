@@ -57,7 +57,6 @@ def tick():
         global originalheading
         global desiredheading
 
-
         if not ai.selfAlive():
             tickCount = 0
             return
@@ -94,28 +93,6 @@ def tick():
 
         if not maphandler:
             maphandler = maphelper.MapHandler(ai)
-
-        if ai.wallFeelerRad(50, selfHeading) != -1: # om vägg är inom 60px av hastighetsvektorn
-            mode = "escapewall"
-        else:
-            mode = "ready"
-
-        if mode == "ready":
-            escape_turned = False # resetta för nästa escape event
-            originalheading = None
-            desiredheading = None
-        elif mode == "escapewall":
-            if not escape_turned:
-                escape_turned = True
-                print("ESCAAAAAAAAAAAAAAAAAAPEEEEE")
-                originalheading = velocityvector
-                desiredheading = originalheading + math.pi
-                ai.turnToRad(desiredheading)
-            else:
-                ai.turnToRad(desiredheading)
-                ai.setPower(55)
-                ai.thrust()
-
 
 
     except:
@@ -175,11 +152,6 @@ def interpretMessage(message):
 def navigateTo(xcoords, ycoords):
     global pathlist
     global missioncompleted
-
-    """
-    Testa denna också
-    http://code.activestate.com/recipes/578919-python-a-pathfinding-with-binary-heap/
-    """
 
     targetX = int(xcoords)
     targetY = int(ycoords)
