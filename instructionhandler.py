@@ -8,24 +8,24 @@ class InstructionHandler:
         self.instructionstack = []
 
 
-    def add_latest_messages():
+    def add_latest_messages(self):
         for i in range(10):
             if self.ai.scanGameMsg(i) not in self.chatmessages:
                 self.chatmessages.append(self.ai.scanGameMsg(i))
 
         for message in self.chatmessages:
             if "move" in message and "completed" not in message and message not in self.instructionstack:
-                instructionstack.append(message)
+                self.instructionstack.append(message)
 
 
-    def interpret_latest_message():
+    def interpret_latest_message(self):
         latest_message = self.instructionstack[-1]
 
-        if "move-to-pass" in message.lower() or "move-to-stop" in message.lower():
-            delegate_move_instruction(latest_message)
+        if "move-to-pass" in latest_message.lower() or "move-to-stop" in latest_message.lower():
+            self.delegate_move_instruction(latest_message)
 
 
-    def delegate_move_instruction(message):
+    def delegate_move_instruction(self, message):
         moveinstruction = message[:12]
         message = message.replace(moveinstruction, "")
         message = message.strip()
@@ -48,4 +48,4 @@ class InstructionHandler:
                 ycoords += char
 
 
-        multiguy.findpath(xcoords, ycoords)
+        self.multiguy.findpath(xcoords, ycoords)

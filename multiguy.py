@@ -17,7 +17,7 @@ def tick():
         global tickCount
         global mode
         global multiguy
-        global chathandler
+        global instructionhandler
 
         if not ai.selfAlive():
             tickCount = 0
