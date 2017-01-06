@@ -4,10 +4,10 @@ import math
 import libpyAI as ai
 from optparse import OptionParser
 from multiguystatemachine import *
-from chathandler import *
+from instructionhandler import *
 
 multiguy = None
-chathandler = None
+instructionhandler = None
 tickCount = 0
 
 def tick():
@@ -29,14 +29,15 @@ def tick():
         if mode == "ready":
             pass
 
-        if not chathandler:
-            chathandler = ChatHandler(ai)
-        else:
-            chathandler.add_latest_messages()
-            chathandler.interpret_latest_message()
-
         if not multiguy:
             multiguy = MultiGuyStateMachine(ai)
+
+        if not instructionhandler:
+            instructionhandler = InstructionHandler(ai, multiguy)
+        else:
+            instructionhandler.add_latest_messages()
+            instructionhandler.interpret_latest_message()
+
 
 
     except:

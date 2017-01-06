@@ -3,7 +3,7 @@ class Navigator:
     def __init__(self, ai):
         self.ai = ai
 
-    def navigateTo(xcoords, ycoords, pathlist, maphandler):
+    def navigateTo(xcoords, ycoords, maphandler):
 
         targetX = int(xcoords)
         targetY = int(ycoords)
@@ -16,9 +16,7 @@ class Navigator:
             print("navigation completed")
 
         # om vi hamnar på vilospår, hämta ny pathlist
-        if self_block not in pathlist:
-            pathlist = maphandler.get_path(self_block, target_block)
-        elif not pathlist: # om vi inte hämtat ett spår än, gör det
+        if not pathlist or self_block not in pathlist:
             pathlist = maphandler.get_path(self_block, target_block)
 
         while self_block in pathlist: # förhindra att vi åker tillbaka (bugg)
