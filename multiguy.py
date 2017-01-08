@@ -29,6 +29,7 @@ def tick():
 
         if not instructionhandler:
             instructionhandler = InstructionHandler(ai, multiguy)
+            multiguy.set_instruction_handler(instructionhandler)
         else:
             instructionhandler.add_latest_messages()
             instructionhandler.interpret_latest_message()

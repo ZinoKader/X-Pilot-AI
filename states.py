@@ -12,6 +12,9 @@ class StateHandler:
     def get_current_state(self):
         return self.state
 
+    def get_all_states(self):
+        return self.states
+
     def is_ready(self):
         return self.state == "ready"
 

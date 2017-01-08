@@ -8,6 +8,7 @@ class InstructionHandler:
         self.multiguy = multiguy
         self.chatmessages = []
         self.instructionstack = []
+        self.delayedinstructions = []
 
 
     def add_latest_messages(self):
@@ -19,11 +20,22 @@ class InstructionHandler:
             if "move" in message and "completed" not in message and message not in self.instructionstack:
                 self.instructionstack.append(message)
 
+
+    def add_delayed_instruction(self, message):
+        delayedinstructions.append(message)
+
+
     def finish_latest_instruction(self):
         self.instructionstack.pop(0)
 
+
     def interpret_latest_message(self):
-        latest_message = self.instructionstack[0] # börja från de äldsta meddelandena
+        if delayedinstructions:
+            latest_message = self.delayedinstructions[0]
+        elif instructionstack:
+            latest_message = self.instructionstack[0]
+        else:
+            return
 
         if "attack" in latest_message:
             self.delegate_attack_instruction(latest_message)
@@ -36,6 +48,7 @@ class InstructionHandler:
     def delegate_move_instruction(self, message):
         coordinates = helpfunctions.extract_coordinates_move_instruction(message)
         self.multiguy.findpath(coordinates)
+
 
     def delegate_attack_instruction(self, message):
         if "ship" in message:
