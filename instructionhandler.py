@@ -54,3 +54,5 @@ class InstructionHandler:
         if "ship" in message:
             target_ship = helpfunctions.extract_target_ship_name(message)
             self.multiguy.attack(target_ship)
+        else:
+            self.multiguy.attack() # attacks nearest target

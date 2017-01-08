@@ -7,16 +7,20 @@ class Attacker:
         self.ai = ai
         self.ai.setTurnSpeed(64)
 
-    def attack_player(self, target):
+    def attack_player(self, target = None, target_id = None):
 
-        target_id = None
-        for i in range(ai.playerCountServer()):
-            for y in range(ai.shipCountScreen()):
-                player_id = ai.playerId(i)
-                ship_id = ai.shipId(y)
-                if player_id == ship_id and self.ai.playerName(i) == target:
-                    target_id = self.ai.shipId(y)
-                    px, py = helpfunctions.get_wrapped_coordinates(self.ai, ship_id)
+        if not target and not target_id:
+            raise ValueError("attack_player requires at least one parameter that isn't None")
+
+        # if server id and ship id have not been matched yet
+        if not target_id:
+            for i in range(self.ai.playerCountServer()):
+                for y in range(self.ai.shipCountScreen()):
+                    player_id = self.ai.playerId(i)
+                    ship_id = self.ai.shipId(y)
+                    if player_id == ship_id and self.ai.playerName(i) == target:
+                        target_id = self.ai.shipId(y)
+                        px, py = helpfunctions.get_wrapped_coordinates(self.ai, ship_id)
 
         px, py = helpfunctions.get_wrapped_coordinates(self.ai, target_id)
         vx, vy = (self.ai.targetX(target_id) - self.ai.selfVelX(), self.ai.targetY(target_id) - self.ai.selfVelY())
@@ -35,6 +39,7 @@ class Attacker:
         if self.ai.shipCountScreen() > 0:
             self.ai.turnToRad(aim_direction)
             self.ai.fireShot()
+
 
     def attack_nearest(self):
 
@@ -55,22 +60,4 @@ class Attacker:
 
         # pick out the closest target from the dictionary
         closest_target_id = ship_distances.get(min(ship_distances))
-        self.attack_player(closest_target_id)
-
-        px, py = helpfunctions.get_wrapped_coordinates(self.ai, closest_target_id)
-        vx, vy = (self.ai.targetX(closest_target_id) - self.ai.selfVelX(), self.ai.targetY(closest_target_id) - self.ai.selfVelY())
-
-        bulletspeedx = (30 * math.cos(self.ai.selfHeadingRad())) + self.ai.selfSpeed()
-        bulletspeedy = (30 * math.sin(self.ai.selfHeadingRad())) + self.ai.selfSpeed()
-        bulletspeed = ( (bulletspeedx ** 2) + (bulletspeedy ** 2) ) ** (1 / 2)
-
-        time_of_impact = helpfunctions.time_of_impact(px, py, vx, vy, bulletspeed)
-
-        targetX = px + (vx * time_of_impact)
-        targetY = py + (vy * time_of_impact)
-
-        aim_direction = math.atan2(targetY, targetX)
-
-        if self.ai.shipCountScreen() > 0:
-            self.ai.turnToRad(aim_direction)
-            self.ai.fireShot()
+        self.attack_player(None, closest_target_id)
