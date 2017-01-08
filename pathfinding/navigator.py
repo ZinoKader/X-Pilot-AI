@@ -3,19 +3,22 @@ import helpfunctions
 
 class Navigator:
 
-    def __init__(self, ai):
+
+    def __init__(self, ai, maphandler):
         self.ai = ai
         self.pathlist = []
+        self.maphandler = maphandler
 
-    def navigateTo(self, xcoords, ycoords, maphandler):
 
-        targetX = int(xcoords)
-        targetY = int(ycoords)
+    def navigateTo(self, coordinates):
+
+        targetX = int(coordinates[0])
+        targetY = int(coordinates[1])
         selfX = self.ai.selfX()
         selfY = self.ai.selfY()
 
-        self_block = maphandler.coords_to_block(selfX, selfY)
-        target_block = maphandler.coords_to_block(targetX, targetY)
+        self_block = self.maphandler.coords_to_block(selfX, selfY)
+        target_block = self.maphandler.coords_to_block(targetX, targetY)
 
         if self_block == target_block:
             self.ai.talk("teacherbot: move-to-pass {}, {} completed".format(targetX, targetY))
@@ -23,14 +26,14 @@ class Navigator:
 
         # om vi hamnar på vilospår, hämta ny pathlist
         if not self.pathlist or self_block not in self.pathlist:
-            self.pathlist = maphandler.get_path(self_block, target_block)
+            self.pathlist = self.maphandler.get_path(self_block, target_block)
 
         while self_block in self.pathlist: # förhindra att vi åker tillbaka (bugg)
             self.pathlist.remove(self_block)
 
         if self.pathlist:
             next_move_block = (self.pathlist[0][0], self.pathlist[0][1])
-            next_move_coords = maphandler.block_to_coords(next_move_block)
+            next_move_coords = self.maphandler.block_to_coords(next_move_block)
 
             targetDirection = math.atan2(next_move_coords[1] - selfY, next_move_coords[0] - selfX)
             self.ai.turnToRad(targetDirection)

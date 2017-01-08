@@ -15,19 +15,14 @@ def tick():
     try:
 
         global tickCount
-        global mode
         global multiguy
         global instructionhandler
 
         if not ai.selfAlive():
             tickCount = 0
-            mode = "ready"
             return
 
         tickCount += 1
-
-        if mode == "ready":
-            pass
 
         if not multiguy:
             multiguy = MultiGuyStateMachine(ai)
