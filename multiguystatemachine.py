@@ -24,5 +24,10 @@ class MultiGuyStateMachine:
             navigator.navigateTo(coordinates)
 
 
-    def attack(self, target):
+    def attack(self, target = None):
         self.states.set_current_state("attacking") # alltid högsta prioritet
+        attacker = Attacker(self.ai)
+        if target:
+            attacker.attack_player(target)
+        else:
+            attacker.attack_nearest()
