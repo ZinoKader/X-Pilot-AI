@@ -20,10 +20,10 @@ class Attacker:
                     ship_id = self.ai.shipId(y)
                     if player_id == ship_id and self.ai.playerName(i) == target:
                         target_id = self.ai.shipId(y)
-                        px, py = helpfunctions.get_wrapped_coordinates(self.ai, ship_id)
+                        px, py = helpfunctions.get_wrapped_coordinates(self.ai, target_id)
 
         px, py = helpfunctions.get_wrapped_coordinates(self.ai, target_id)
-        vx, vy = (self.ai.targetX(target_id) - self.ai.selfVelX(), self.ai.targetY(target_id) - self.ai.selfVelY())
+        vx, vy = (self.ai.targetVelX(target_id) - self.ai.selfVelX(), self.ai.targetVelY(target_id) - self.ai.selfVelY())
 
         bulletspeedx = (30 * math.cos(self.ai.selfHeadingRad())) + self.ai.selfSpeed()
         bulletspeedy = (30 * math.sin(self.ai.selfHeadingRad())) + self.ai.selfSpeed()

@@ -10,6 +10,22 @@ class Navigator:
         self.maphandler = maphandler
 
 
+    def check_navigation_finished(self, coordinates):
+
+        targetX = int(coordinates[0])
+        targetY = int(coordinates[1])
+        selfX = self.ai.selfX()
+        selfY = self.ai.selfY()
+
+        self_block = self.maphandler.coords_to_block(selfX, selfY)
+        target_block = self.maphandler.coords_to_block(targetX, targetY)
+
+        if self_block == target_block:
+            self.ai.talk("move instruction {}, {} completed".format(targetX, targetY))
+            print("navigation completed")
+            return True
+        return False
+
     def navigate(self, coordinates):
 
         targetX = int(coordinates[0])

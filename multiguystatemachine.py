@@ -21,7 +21,11 @@ class MultiGuyStateMachine:
         if self.states.is_ready() and not self.states.is_attacking(): # prioriterar attack före findpath
             self.states.set_current_state("pathfinding")
             navigator = Navigator(self.ai, MapHandler(self.ai))
-            navigator.navigate(coordinates)
+            if navigator.check_navigation_finished(coordinates):
+                self.instructionhandler.finish_latest_instruction()
+                return
+            else:
+                navigator.navigate(coordinates)
 
 
     def attack(self, target = None):
