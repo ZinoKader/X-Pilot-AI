@@ -76,7 +76,7 @@ class SquareGrid:
 
     def neighbors(self, id):
         (x, y) = id
-        results = [(x+1, y), (x-1, y), (x, y-1), (x, y+1)]
+        results = [(x+1, y), (x-1, y), (x, y-1), (x, y+1), (x+1, y+1), (x-1), (y-1)]
         if (x + y) % 2 == 0: results.reverse() # aesthetics
         results = filter(self.in_bounds, results)
         results = filter(self.passable, results)
@@ -139,10 +139,13 @@ def reconstruct_path(came_from, start, goal):
     path.reverse() # optional
     return path
 
-def heuristic(a, b):
+def heuristic(a, b): # euclidian distance, since we can move diagonally too
     (x1, y1) = a
     (x2, y2) = b
-    return abs(x1 - x2) + abs(y1 - y2)
+    dx = abs(x1 - x2)
+    dy = abs(y1 - y2)
+    d = 1
+    return d * (dx + dy) + (d - 2 * d) * min(dx, dy)
 
 def a_star_search(graph, start, goal):
     frontier = PriorityQueue()

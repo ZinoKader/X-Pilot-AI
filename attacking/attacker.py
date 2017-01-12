@@ -22,7 +22,7 @@ class Attacker:
                     player_id = self.ai.playerId(i)
                     ship_id = self.ai.shipId(y)
                     if player_id == ship_id and self.ai.playerName(i) == target:
-                        target_id = self.ai.shipId(y)
+                        target_id = y
                         px, py = helpfunctions.get_wrapped_coordinates(self.ai, target_id)
 
         px, py = helpfunctions.get_wrapped_coordinates(self.ai, target_id)
