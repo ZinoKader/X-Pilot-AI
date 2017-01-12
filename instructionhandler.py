@@ -20,6 +20,8 @@ class InstructionHandler:
             if "mission" in message and "completed" not in message and message not in self.instructionstack:
                 self.instructionstack.append(message)
 
+        print(self.instructionstack)
+
 
     def add_delayed_instruction(self, message):
         self.delayedinstructions.append(message)
