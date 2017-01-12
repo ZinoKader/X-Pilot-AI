@@ -21,7 +21,6 @@ class Navigator:
         target_block = self.maphandler.coords_to_block(targetX, targetY)
 
         if self_block == target_block:
-            self.ai.talk("move instruction {}, {} completed".format(targetX, targetY))
             print("navigation completed")
             return True
         return False

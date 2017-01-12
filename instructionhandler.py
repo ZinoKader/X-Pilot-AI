@@ -13,7 +13,7 @@ class InstructionHandler:
 
     def add_latest_messages(self):
         for i in range(10):
-            if self.ai.scanGameMsg(i) not in self.chatmessages:
+            if self.ai.scanGameMsg(i) not in self.chatmessages: # don't allow same message to be added multiple times
                 self.chatmessages.append(self.ai.scanGameMsg(i))
 
         for message in self.chatmessages:
@@ -29,6 +29,7 @@ class InstructionHandler:
 
     def finish_latest_instruction(self):
         self.instructionstack.pop(0)
+        self.chatmessages.clear() # same instruction can now be added again
 
 
     def interpret_latest_message(self):
