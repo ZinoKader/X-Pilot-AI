@@ -145,7 +145,7 @@ def heuristic(a, b): # euclidian distance, since we can move diagonally too
     dx = abs(x1 - x2)
     dy = abs(y1 - y2)
     d = 1
-    return d * (dx + dy) + (d - 2 * d) * min(dx, dy)
+    return d * (dx + dy) + (d - 2 * 2) * min(dx, dy)
 
 def a_star_search(graph, start, goal):
     frontier = PriorityQueue()
