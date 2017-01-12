@@ -7,7 +7,7 @@ import traceback
 import math
 import libpyAI as ai
 from optparse import OptionParser
-import maphelper
+from maphelper import *
 
 maphandler = None
 pathlist = []
