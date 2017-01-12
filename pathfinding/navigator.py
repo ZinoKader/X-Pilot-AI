@@ -10,7 +10,7 @@ class Navigator:
         self.maphandler = maphandler
 
 
-    def check_navigation_finished(self, coordinates):
+    def navigation_finished(self, coordinates):
 
         targetX = int(coordinates[0])
         targetY = int(coordinates[1])

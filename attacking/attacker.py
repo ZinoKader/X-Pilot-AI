@@ -7,6 +7,9 @@ class Attacker:
         self.ai = ai
         self.ai.setTurnSpeed(64)
 
+    def target_alive(self, target):
+        pass
+
     def attack_player(self, target = None, target_id = None):
 
         if not target and not target_id:
