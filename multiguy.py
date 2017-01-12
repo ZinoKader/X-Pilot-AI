@@ -22,6 +22,7 @@ def tick():
             tickCount = 0
             return
 
+        print("TARGETCOUNT: " + str(ai.targetCountServer()))
         tickCount += 1
 
         if not multiguy:
