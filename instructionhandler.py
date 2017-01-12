@@ -1,4 +1,4 @@
-from helpfunctions import *
+import helpfunctions
 
 class InstructionHandler:
 
