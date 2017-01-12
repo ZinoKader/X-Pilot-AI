@@ -12,9 +12,6 @@ class Attacker:
 
     def attack_player(self, target = None, target_id = None):
 
-        if not target and not target_id:
-            raise ValueError("attack_player requires at least one parameter that isn't None")
-
         # if server id and ship id have not been matched yet
         if not target_id:
             for i in range(self.ai.playerCountServer()):
