@@ -56,7 +56,6 @@ class Attacker:
                 player_id = self.ai.playerId(i)
                 ship_id = self.ai.shipId(y)
                 if player_id == ship_id:
-                    ship_id = self.ai.shipId(y)
                     px, py = helpfunctions.get_wrapped_coordinates(self.ai, ship_id)
                     rel_distance = ( ( px ** 2) + ( py ** 2) ) ** ( 1/2 )
                     ship_distances[rel_distance] = i

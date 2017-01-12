@@ -53,26 +53,26 @@ def get_wrapped_coordinates(ai, target):
     py = None
 
     if selfX > ai.mapWidthPixels() / 2:
-        if selfX - ai.targetX(target) >= (ai.mapWidthPixels() / 2):
-            px = ai.mapWidthPixels() - (selfX - ai.targetX(target))
+        if selfX - ai.shipX(target) >= (ai.mapWidthPixels() / 2):
+            px = ai.mapWidthPixels() - (selfX - ai.shipX(target))
         else:
-            px = ai.targetX(target) - selfX
+            px = ai.shipX(target) - selfX
     else:
-        if ai.targetX(target) - selfX >= (ai.mapWidthPixels() / 2):
-            px = -(ai.mapWidthPixels() - (ai.targetX(target) - selfX))
+        if ai.shipX(target) - selfX >= (ai.mapWidthPixels() / 2):
+            px = -(ai.mapWidthPixels() - (ai.shipX(target) - selfX))
         else:
-            px = ai.targetX(target) - selfX
+            px = ai.shipX(target) - selfX
 
     if selfY > ai.mapHeightPixels() / 2:
-        if selfY - ai.targetY(target) >= (ai.mapHeightPixels() / 2):
-            py = ai.mapHeightPixels() - (selfY - ai.targetY(target))
+        if selfY - ai.shipY(target) >= (ai.mapHeightPixels() / 2):
+            py = ai.mapHeightPixels() - (selfY - ai.shipY(target))
         else:
-            py = ai.targetY(target) - selfY
+            py = ai.shipY(target) - selfY
     else:
-        if ai.targetY(target) - selfY >= (ai.mapHeightPixels() / 2):
-            py = -(ai.mapHeightPixels() - (ai.targetY(target) - selfY))
+        if ai.shipY(target) - selfY >= (ai.mapHeightPixels() / 2):
+            py = -(ai.mapHeightPixels() - (ai.shipY(target) - selfY))
         else:
-            py = ai.targetY(target) - selfY
+            py = ai.shipY(target) - selfY
 
     return(px, py)
 

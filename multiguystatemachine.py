@@ -2,6 +2,7 @@ import sys
 sys.path.append('pathfinding')
 sys.path.append('attacking')
 from navigator import *
+from attacker import *
 from maphelper import *
 from states import *
 

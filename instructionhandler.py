@@ -17,12 +17,14 @@ class InstructionHandler:
                 self.chatmessages.append(self.ai.scanGameMsg(i))
 
         for message in self.chatmessages:
-            if "move" in message and "completed" not in message and message not in self.instructionstack:
+            if "mission" in message and "completed" not in message and message not in self.instructionstack:
                 self.instructionstack.append(message)
+                
+        print(self.instructionstack)
 
 
     def add_delayed_instruction(self, message):
-        delayedinstructions.append(message)
+        self.delayedinstructions.append(message)
 
 
     def finish_latest_instruction(self):
@@ -30,19 +32,16 @@ class InstructionHandler:
 
 
     def interpret_latest_message(self):
-        if delayedinstructions:
+        latest_message = ""
+        if self.delayedinstructions:
             latest_message = self.delayedinstructions[0]
-        elif instructionstack:
+        elif self.instructionstack:
             latest_message = self.instructionstack[0]
-        else:
-            return
 
         if "attack" in latest_message:
             self.delegate_attack_instruction(latest_message)
-            return
-        if "move-to" in latest_message:
+        elif "move-to" in latest_message:
             self.delegate_move_instruction(latest_message)
-            return
 
 
     def delegate_move_instruction(self, message):
