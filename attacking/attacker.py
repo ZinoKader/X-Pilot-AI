@@ -26,7 +26,7 @@ class Attacker:
                         px, py = helpfunctions.get_wrapped_coordinates(self.ai, target_id)
 
         px, py = helpfunctions.get_wrapped_coordinates(self.ai, target_id)
-        vx, vy = (self.ai.targetVelX(target_id) - self.ai.selfVelX(), self.ai.targetVelY(target_id) - self.ai.selfVelY())
+        vx, vy = (self.ai.shipVelX(target_id) - self.ai.selfVelX(), self.ai.shipVelY(target_id) - self.ai.selfVelY())
 
         bulletspeedx = (30 * math.cos(self.ai.selfHeadingRad())) + self.ai.selfSpeed()
         bulletspeedy = (30 * math.sin(self.ai.selfHeadingRad())) + self.ai.selfSpeed()
@@ -55,11 +55,18 @@ class Attacker:
             for y in range(self.ai.shipCountScreen()):
                 player_id = self.ai.playerId(i)
                 ship_id = self.ai.shipId(y)
-                if player_id == ship_id:
-                    px, py = helpfunctions.get_wrapped_coordinates(self.ai, ship_id)
+                if player_id == ship_id and player_id != self.ai.selfId():
+                    px, py = helpfunctions.get_wrapped_coordinates(self.ai, y)
                     rel_distance = ( ( px ** 2) + ( py ** 2) ) ** ( 1/2 )
-                    ship_distances[rel_distance] = i
+                    ship_distances[rel_distance] = y
+                    break
 
+        if not ship_distances:
+            print("No targets nearby.")
+            return
+        print("***")
+        print(ship_distances)
+        print("***")
         # pick out the closest target from the dictionary
         closest_target_id = ship_distances.get(min(ship_distances))
         self.attack_player(None, closest_target_id)
