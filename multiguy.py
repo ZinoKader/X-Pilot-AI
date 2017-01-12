@@ -34,9 +34,6 @@ def tick():
             instructionhandler.add_latest_messages()
             instructionhandler.interpret_latest_message()
 
-        if ai.selfShield():
-            ai.shield()
-
 
     except:
         print(traceback.print_exc())

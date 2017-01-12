@@ -25,8 +25,8 @@ shipmass : 20.0
 shotmass : 0.8
 shotspeed : 21.0
 shotlife : 60
-maxplayershots : 20
-firerepeatrate : 13
+maxplayershots : 500
+firerepeatrate : 100
 keepshots : no
 edgebounce : no
 edgewrap : no
