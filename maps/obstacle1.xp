@@ -14,7 +14,6 @@ gravitypoint : 0,0
 gravitypointsource : no
 gravityclockwise : no
 gravityanticlockwise : no
-shotsgravity : no
 gravityvisible : no
 coriolis : 0
 friction : 0.1
@@ -22,11 +21,8 @@ blockfriction : 0.0
 defaultshipshape : (NM:Default)(AU:Unknown)(SH: 15,0 -9,8 -9,-8)(MG: 15,0)(LG: 15,0)(RG: 15,0)(EN: -9,0)(LR: -9,8)(RR: -9,-8)(LL: -9,8)(RL: -9,-8)(MR: 15,0)
 tankshipshape : (NM:fueltank)(AU:John E. Norlin)(SH: 15,0 14,-5 9,-8 -5,-8 -3,-8 -3,0 2,0 2,2 -3,2 -3,6 5,6 5,8 -5,8 -5,-8 -9,-8 -14,-5 -15,0 -14,5 -9,8 9,8 14,5)(EN: -15,0)(MG: 15,0)
 shipmass : 20.0
-shotmass : 0.8
-shotspeed : 21.0
 shotlife : 60
 maxplayershots : 500
-firerepeatrate : 100
 keepshots : no
 edgebounce : no
 edgewrap : no
