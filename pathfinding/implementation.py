@@ -140,7 +140,7 @@ def reconstruct_path(came_from, start, goal):
     return path
 
 def heuristic(a, b):
-    return abs(a.x - b.x) + abs(a.y - b.y)
+    return abs(a[0] - b[0]) + abs(a[1] - b[1]) # a, b are tuples (x, y)
 
 def a_star_search(graph, start, goal):
     frontier = PriorityQueue()
