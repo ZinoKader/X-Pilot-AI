@@ -29,7 +29,7 @@ class InstructionHandler:
 
 
     def finish_latest_instruction(self):
-        self.finishedinstructions.append(instructionstack[0])
+        self.finishedinstructions.append(self.instructionstack[0])
         self.instructionstack.pop(0)
 
 
