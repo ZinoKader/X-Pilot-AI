@@ -2,7 +2,7 @@
 #xpilots -map maps/obstacle1.xp -noQuit \ +reportToMetaServer -port 15390
 
 import sys
-sys.path.append('/pathfinding')
+sys.path.append('../')
 import traceback
 import math
 import libpyAI as ai
