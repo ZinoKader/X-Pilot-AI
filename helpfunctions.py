@@ -17,7 +17,7 @@ def angleDiff(one, two):
 
 
 def extract_coordinates_move_instruction(message):
-    message = message.replace("move to ", "")
+    message = message.replace("mission move to ", "")
     message = message.strip()
 
     xcoords = ""
@@ -41,7 +41,7 @@ def extract_coordinates_move_instruction(message):
 
 
 def extract_target_ship_name(message):
-    return message.replace("attack ship ", "")
+    return message.replace("mission attack ship ", "")
 
 
 def get_wrapped_coordinates(ai, target):
