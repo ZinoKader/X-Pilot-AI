@@ -24,7 +24,6 @@ class MultiGuyStateMachine:
             navigator = Navigator(self.ai, MapHandler(self.ai))
             if navigator.navigation_finished(coordinates):
                 self.instructionhandler.finish_latest_instruction()
-                return
             else:
                 navigator.navigate(coordinates)
 

@@ -9,6 +9,7 @@ class InstructionHandler:
         self.chatmessages = []
         self.instructionstack = []
         self.delayedinstructions = []
+        self.finishedinstructions = []
 
 
     def add_latest_messages(self):
@@ -17,7 +18,7 @@ class InstructionHandler:
                 self.chatmessages.append(self.ai.scanGameMsg(i))
 
         for message in self.chatmessages:
-            if "mission" in message and "completed" not in message and message not in self.instructionstack:
+            if "mission" in message and "completed" not in message and message not in self.instructionstack and message not in self.finishedinstructions:
                 self.instructionstack.append(message)
 
         print(self.instructionstack)
@@ -28,8 +29,8 @@ class InstructionHandler:
 
 
     def finish_latest_instruction(self):
+        self.finishedinstructions.append(instructionstack[0])
         self.instructionstack.pop(0)
-        self.chatmessages.clear() # same instruction can now be added again
 
 
     def interpret_latest_message(self):
