@@ -38,7 +38,7 @@ class InstructionHandler:
 
         if "attack" in latest_message:
             self.delegate_attack_instruction(latest_message)
-        elif "move-to" in latest_message:
+        elif "move to" in latest_message:
             self.delegate_move_instruction(latest_message)
 
 

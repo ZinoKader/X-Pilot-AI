@@ -17,8 +17,7 @@ def angleDiff(one, two):
 
 
 def extract_coordinates_move_instruction(message):
-    moveinstruction = message[:12]
-    message = message.replace(moveinstruction, "")
+    message = message.replace("move to ", "")
     message = message.strip()
 
     xcoords = ""
