@@ -2,12 +2,12 @@
 #xpilots -map maps/obstacle1.xp -noQuit \ +reportToMetaServer -port 15390
 
 import sys
-sys.path.append('pathfinding')
+sys.path.append('/pathfinding')
 import traceback
 import math
 import libpyAI as ai
 from optparse import OptionParser
-from maphelper import *
+import maphelper
 
 maphandler = None
 pathlist = []
