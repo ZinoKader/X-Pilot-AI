@@ -1,5 +1,5 @@
 import sys
-sys.path.append('pathfinding')
+sys.path.append('../pathfinding')
 from maphelper import *
 import helpfunctions
 
