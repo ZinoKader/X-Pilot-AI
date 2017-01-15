@@ -3,6 +3,7 @@ sys.path.append('pathfinding')
 sys.path.append('attacking')
 from navigator import *
 from attacker import *
+from roamer import *
 from maphelper import *
 from states import *
 
@@ -18,14 +19,23 @@ class MultiGuyStateMachine:
         self.instructionhandler = instructionhandler
 
 
+    def roam(self):
+        if self.states.is_ready() or self.states.is_roaming():
+            self.states.set_current_state("roaming")
+            roamer = Roamer(self.ai)
+            roamer.roam_random()
+
+
     def findpath(self, coordinates):
-        if self.states.is_ready() or self.states.is_pathfinding() and not self.states.is_attacking(): # prioriterar attack före findpath
+        if not self.states.is_attacking(): # prioriterar attack före findpath
             self.states.set_current_state("pathfinding")
             navigator = Navigator(self.ai, MapHandler(self.ai))
             if navigator.navigation_finished(coordinates):
                 self.instructionhandler.finish_latest_instruction()
             else:
                 navigator.navigate(coordinates)
+        else:
+            print("Must be in either states [ready, pathfinding] and not in state [attacking] to pathfind")
 
 
     def attack(self, target = None):

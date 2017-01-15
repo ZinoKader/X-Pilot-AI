@@ -31,7 +31,7 @@ def tick():
             instructionhandler = InstructionHandler(ai, multiguy)
             multiguy.set_instruction_handler(instructionhandler)
         else:
-            instructionhandler.add_latest_messages()
+            instructionhandler.uodate_instructions()
             instructionhandler.interpret_latest_message()
 
 

@@ -25,6 +25,7 @@ class Navigator:
             return True
         return False
 
+
     def navigate(self, coordinates):
 
         targetX = int(coordinates[0])
@@ -56,3 +57,25 @@ class Navigator:
             # thrusta endast när vi har nästa block i sikte så vi inte thrustar in i väggar
             if helpfunctions.angleDiff(self.ai.selfHeadingRad(), targetDirection) < 0.1:
                 self.ai.thrust()
+
+
+    def navigate_free_random_position(self):
+        mapwidth = ai.mapWidthPixels()
+        mapheight = ai.mapHeightPixels()
+        mapwblock = ai.mapWidthBlocks()
+        maphblock = ai.mapHeightBlocks()
+        dw = mapwidth/mapwblock
+        dh = mapheight/maphblock
+
+        found = False
+        while not found:
+            bx = randint(0, mapwblock-1)
+            by = randint(0, maphblock-1)
+            type = ai.mapData(bx, by)
+            if type == 0:
+                found = True
+
+        x = int(bx*dw + dw/2)
+        y = int(by*dh + dh/2)
+
+        return (x, y)
