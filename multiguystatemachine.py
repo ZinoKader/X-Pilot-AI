@@ -1,6 +1,7 @@
 import sys
 sys.path.append('pathfinding')
 sys.path.append('attacking')
+sys.path.append('roaming')
 from navigator import *
 from attacker import *
 from roamer import *
