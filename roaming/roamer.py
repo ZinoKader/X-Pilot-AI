@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../pathfinding')
+sys.path.append('../roaming')
 from maphelper import *
 import helpfunctions
 
