@@ -77,6 +77,28 @@ def get_wrapped_coordinates(ai, target):
     return(px, py)
 
 
+def find_free_random_position(ai):
+    mapwidth = ai.mapWidthPixels()
+    mapheight = ai.mapHeightPixels()
+    mapwblock = ai.mapWidthBlocks()
+    maphblock = ai.mapHeightBlocks()
+    dw = mapwidth/mapwblock
+    dh = mapheight/maphblock
+
+    found = False
+    while not found:
+        bx = randint(0, mapwblock-1)
+        by = randint(0, maphblock-1)
+        type = ai.mapData(bx, by)
+        if type == 0:
+            found = True
+
+    x = int(bx*dw + dw/2)
+    y = int(by*dh + dh/2)
+
+    return (x, y)
+
+
 def time_of_impact(px, py, vx, vy, s):
 
     a = (s * s) - ( (vx * vx) + (vy * vy) )

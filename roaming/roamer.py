@@ -1,10 +1,12 @@
 from maphelper import *
+import helpfunctions
 
 class Roamer:
 
-    def __init__(self, ai):
+    def __init__(self, ai, navigator):
         self.ai = ai
+        self.navigator = navigator
 
     def roam_random(self):
-        navigator = Navigator(self.ai, MapHandler(self.ai))
-        
+        random_free_coordinates = helpfunctions.find_free_random_position(self.ai)
+        self.navigator.navigate(random_free_coordinates)

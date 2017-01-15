@@ -22,7 +22,7 @@ class MultiGuyStateMachine:
     def roam(self):
         if self.states.is_ready() or self.states.is_roaming():
             self.states.set_current_state("roaming")
-            roamer = Roamer(self.ai)
+            roamer = Roamer(self.ai, Navigator(self.ai, MapHandler(self.ai)))
             roamer.roam_random()
 
 
