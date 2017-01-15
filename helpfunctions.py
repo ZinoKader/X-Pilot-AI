@@ -45,6 +45,9 @@ def extract_target_ship_name(message):
     return message.replace("mission attack ship ", "")
 
 
+def check_attacking_nearest(instructionstack):
+    return instructionstack and "nearest" in instructionstack[0]
+
 def get_wrapped_coordinates(ai, target):
 
     selfX = ( ai.selfRadarX() / ai.radarWidth() ) * ai.mapWidthPixels()

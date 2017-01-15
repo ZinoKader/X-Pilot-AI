@@ -17,8 +17,8 @@ class InstructionHandler:
 
 
     def update_instructions(self):
-        # check for idleness
-        if not self.instructionstack and not self.delayedinstructions:
+        # Check for idleness (empty instructionstack and delayedinstructionstack). If the first instruction is of type "mission attack nearest", count each tick as an idle one.
+        if (helpfunctions.check_attacking_nearest(self.instructionstack)) or (not self.instructionstack and not self.delayedinstructions):
             self.idleticks += 1
         else:
             self.idleticks = 0
@@ -34,6 +34,8 @@ class InstructionHandler:
         for message in self.chatmessages:
             if "mission" in message and "completed" not in message and message not in self.instructionstack and message not in self.finishedinstructions:
                 self.instructionstack.append(message)
+
+        print(self.idleticks)
 
 
     def add_delayed_instruction(self, message):
@@ -67,7 +69,7 @@ class InstructionHandler:
         if "ship" in message:
             target_ship = helpfunctions.extract_target_ship_name(message)
             self.multiguy.attack(target_ship)
-        else:
+        elif "nearest" in message:
             self.multiguy.attack() # attacks nearest target
 
     def delegate_roam_instruction(self):

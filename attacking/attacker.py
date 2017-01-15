@@ -41,7 +41,7 @@ class Attacker:
             self.ai.fireShot()
 
 
-    def attack_nearest(self):
+    def attack_nearest(self): # returns True if ships were nearby, False if not
 
         selfX = ( self.ai.selfRadarX() / self.ai.radarWidth() ) * self.ai.mapWidthPixels()
         selfY = ( self.ai.selfRadarY() / self.ai.radarHeight() ) * self.ai.mapHeightPixels()
@@ -58,12 +58,10 @@ class Attacker:
                     ship_distances[rel_distance] = y
                     break
 
-        if not ship_distances:
-            print("No targets nearby.")
-            return
-        print("***")
-        print(ship_distances)
-        print("***")
-        # pick out the closest target from the dictionary
-        closest_target_id = ship_distances.get(min(ship_distances))
-        self.attack_player(None, closest_target_id)
+        if ship_distances:
+            # pick out the closest target from the dictionary
+            closest_target_id = ship_distances.get(min(ship_distances))
+            self.attack_player(None, closest_target_id)
+            return True
+        else:
+            return False
