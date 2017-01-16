@@ -45,7 +45,7 @@ def extract_target_ship_name(message):
 
 
 def no_targets_near(ai):
-    return ai.shipCountScreen() > 1 # other ships (other than ourselves) are near
+    return ai.shipCountScreen() == 1 # just our own ship
 
 
 def get_wrapped_coordinates(ai, target):
