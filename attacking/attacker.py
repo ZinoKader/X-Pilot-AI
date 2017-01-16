@@ -22,8 +22,8 @@ class Attacker:
                         target_id = y
                         break
 
-        # If the target could not be found, return False
-        if not target_id:
+        # If the target could not be found, return False (== None because target_id could be 0)
+        if target_id == None:
             return False
 
         px, py = helpfunctions.get_wrapped_coordinates(self.ai, target_id)
