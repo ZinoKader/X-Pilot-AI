@@ -20,8 +20,8 @@ class Attacker:
                     ship_id = self.ai.shipId(y)
                     print(self.ai.playerName(i))
                     if player_id == ship_id and self.ai.playerName(i) == target:
+                        print("shit")
                         target_id = y
-                        px, py = helpfunctions.get_wrapped_coordinates(self.ai, target_id)
                         break
 
         print("****")
