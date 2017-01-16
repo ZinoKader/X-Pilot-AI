@@ -22,9 +22,10 @@ class Attacker:
                         target_id = y
                         break
 
-        print("****")
-        print(target_id)
-        print("****")
+        # If the target could not be found, return False
+        if not target_id:
+            return False
+
         px, py = helpfunctions.get_wrapped_coordinates(self.ai, target_id)
         vx, vy = (self.ai.shipVelX(target_id) - self.ai.selfVelX(), self.ai.shipVelY(target_id) - self.ai.selfVelY())
 
@@ -42,6 +43,7 @@ class Attacker:
         if self.ai.shipCountScreen() > 0:
             self.ai.turnToRad(aim_direction)
             self.ai.fireShot()
+        return True
 
 
     def attack_nearest(self): # returns True if ships were nearby, False if not
