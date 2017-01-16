@@ -18,6 +18,7 @@ class Attacker:
                 for y in range(self.ai.shipCountScreen()):
                     player_id = self.ai.playerId(i)
                     ship_id = self.ai.shipId(y)
+                    print(self.ai.playerName(i))
                     if player_id == ship_id and self.ai.playerName(i) == target:
                         target_id = y
                         px, py = helpfunctions.get_wrapped_coordinates(self.ai, target_id)
