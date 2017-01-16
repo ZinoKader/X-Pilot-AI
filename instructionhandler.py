@@ -24,6 +24,7 @@ class InstructionHandler:
             self.idleticks = 0
 
         if self.should_roam():
+            print("roamroam")
             self.delegate_roam_instruction()
 
         # update instructionstack with latest instruction
@@ -35,7 +36,8 @@ class InstructionHandler:
             if "mission" in message and "completed" not in message and message not in self.instructionstack and message not in self.finishedinstructions:
                 self.instructionstack.append(message)
 
-        print(self.idleticks)
+        if self.idleticks % 10 == 0:
+            print("Idle ticks: " + str(self.idleticks))
 
 
     def add_delayed_instruction(self, message):
