@@ -1,5 +1,6 @@
 import math
 import random
+import re
 
 def distanceTo(dist1, dist2):
     if dist1 > dist2:
@@ -41,7 +42,9 @@ def extract_coordinates_move_instruction(message):
 
 
 def extract_target_ship_name(message):
-    return message.replace("mission attack ship ", "")
+    message = re.sub(r'\[.+?\]\s*', '', message) # remove brackets and their contents (removes sender name)
+    message = message.replace("mission attack ship ", "")
+    return message
 
 
 def no_targets_near(ai):

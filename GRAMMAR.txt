@@ -1,3 +1,7 @@
+Start the test server for the single bot with:
+xpilots -map maps/obstacle1.xp -noQuit -port 15352
+
+
 All tasks start with the keyword "mission".
 
 Make the bot attack the closest, unspecified enemy - "mission attack nearest"
