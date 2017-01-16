@@ -21,7 +21,11 @@ class Attacker:
                     if player_id == ship_id and self.ai.playerName(i) == target:
                         target_id = y
                         px, py = helpfunctions.get_wrapped_coordinates(self.ai, target_id)
+                        break
 
+        print("****")
+        print(target_id)
+        print("****")
         px, py = helpfunctions.get_wrapped_coordinates(self.ai, target_id)
         vx, vy = (self.ai.shipVelX(target_id) - self.ai.selfVelX(), self.ai.shipVelY(target_id) - self.ai.selfVelY())
 

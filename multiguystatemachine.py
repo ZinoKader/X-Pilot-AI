@@ -50,7 +50,7 @@ class MultiGuyStateMachine:
         """
         if target:
             self.states.set_current_state("attacking")
-            attacker.attack_player(target)
+            attacker.attack_player(target, None)
         else:
             self.states.set_current_state("attacking nearest")
             attacker.attack_nearest()
