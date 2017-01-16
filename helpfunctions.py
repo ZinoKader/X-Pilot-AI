@@ -44,8 +44,8 @@ def extract_target_ship_name(message):
     return message.replace("mission attack ship ", "")
 
 
-def check_attacking_nearest(instructionstack):
-    return instructionstack and "nearest" in instructionstack[0]
+def no_targets_near(ai):
+    return ai.shipCountScreen() > 1 # other ships (other than ourselves) are near
 
 
 def get_wrapped_coordinates(ai, target):

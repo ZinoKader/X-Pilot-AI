@@ -14,12 +14,12 @@ class InstructionHandler:
 
 
     def should_roam(self):
-        return (helpfunctions.check_attacking_nearest(self.instructionstack) or (not self.instructionstack and not self.delayedinstructions)) and self.idleticks > 200
+        return (helpfunctions.no_targets_near(self.ai) or (not self.instructionstack and not self.delayedinstructions)) and self.idleticks > 200
 
 
     def update_instructions(self):
-        # Check for idleness (empty instructionstack and delayedinstructionstack). If the first instruction is of type "mission attack nearest", count each tick as an idle one.
-        if (helpfunctions.check_attacking_nearest(self.instructionstack)) or (not self.instructionstack and not self.delayedinstructions):
+        # Check for idleness (empty instructionstack and delayedinstructionstack). If no targets are near, count each tick as an idle one.
+        if (helpfunctions.no_targets_near(self.ai)) or (not self.instructionstack and not self.delayedinstructions):
             self.idleticks += 1
         else:
             self.idleticks = 0
