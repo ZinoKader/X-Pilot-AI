@@ -25,6 +25,8 @@ class MultiGuyStateMachine:
             self.states.set_current_state("roaming")
             roamer = Roamer(self.ai, Navigator(self.ai, MapHandler(self.ai)))
             roamer.roam_random()
+        else:
+            print("Won't roam, not ready.")
 
 
     def findpath(self, coordinates):
@@ -32,19 +34,22 @@ class MultiGuyStateMachine:
             self.states.set_current_state("pathfinding")
             navigator = Navigator(self.ai, MapHandler(self.ai))
             if navigator.navigation_finished(coordinates):
+                self.states.set_current_state("ready")
                 self.instructionhandler.finish_latest_instruction()
             else:
                 navigator.navigate(coordinates)
         else:
-            print("Must be in either states [ready, pathfinding] and not in state [attacking] to pathfind")
+            print("Must be in either states [ready, pathfinding] and not in state [attacking] to pathfind.")
 
 
     def attack(self, target = None):
-        self.states.set_current_state("attacking") # alltid högsta prioritet
         attacker = Attacker(self.ai)
         if target and not attacker.target_alive(target):
+            self.states.set_current_state("ready")
             self.instructionhandler.finish_latest_instruction()
         elif target:
+            self.states.set_current_state("attacking")
             attacker.attack_player(target)
         else:
+            self.states.set_current_state("attacking nearest")
             attacker.attack_nearest()

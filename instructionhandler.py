@@ -12,6 +12,7 @@ class InstructionHandler:
         self.finishedinstructions = []
         self.idleticks = 0
 
+
     def should_roam(self):
         return (helpfunctions.check_attacking_nearest(self.instructionstack) or (not self.instructionstack and not self.delayedinstructions)) and self.idleticks > 200
 
@@ -22,6 +23,10 @@ class InstructionHandler:
             self.idleticks += 1
         else:
             self.idleticks = 0
+
+        if self.should_roam():
+            print("roamroam")
+            self.delegate_roam_instruction()
 
         # update instructionstack with latest instruction
         for i in range(10):
@@ -34,12 +39,6 @@ class InstructionHandler:
 
         if self.idleticks % 10 == 0:
             print("Idle ticks: " + str(self.idleticks))
-
-        if self.should_roam():
-            print("roamroam")
-            self.delegate_roam_instruction()
-            self.instructionstack.clear()
-            self.delayedinstructions.clear()
 
 
     def add_delayed_instruction(self, message):
@@ -75,6 +74,7 @@ class InstructionHandler:
             self.multiguy.attack(target_ship)
         elif "nearest" in message:
             self.multiguy.attack() # attacks nearest target
+
 
     def delegate_roam_instruction(self):
         self.multiguy.roam()
