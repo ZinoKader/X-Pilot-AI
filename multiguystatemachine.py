@@ -43,10 +43,12 @@ class MultiGuyStateMachine:
 
     def attack(self, target = None):
         attacker = Attacker(self.ai)
+        """
         if target and not attacker.target_alive(target):
             self.states.set_current_state("ready")
             self.instructionhandler.finish_latest_instruction()
-        elif target:
+        """
+        if target:
             self.states.set_current_state("attacking")
             attacker.attack_player(target)
         else:

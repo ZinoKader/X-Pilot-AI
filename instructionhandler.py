@@ -70,7 +70,6 @@ class InstructionHandler:
     def delegate_attack_instruction(self, message):
         if "ship" in message:
             target_ship = helpfunctions.extract_target_ship_name(message)
-            print(target_ship)
             self.multiguy.attack(target_ship)
         elif "nearest" in message:
             self.multiguy.attack() # attacks nearest target
