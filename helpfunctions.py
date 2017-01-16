@@ -1,5 +1,5 @@
 import math
-
+import random
 
 def distanceTo(dist1, dist2):
     if dist1 > dist2:
@@ -79,6 +79,7 @@ def get_wrapped_coordinates(ai, target):
     return(px, py)
 
 
+# from teacherbot, thanks.
 def find_free_random_position(ai):
     mapwidth = ai.mapWidthPixels()
     mapheight = ai.mapHeightPixels()
@@ -89,8 +90,8 @@ def find_free_random_position(ai):
 
     found = False
     while not found:
-        bx = randint(0, mapwblock-1)
-        by = randint(0, maphblock-1)
+        bx = random.randint(0, mapwblock-1)
+        by = random.randint(0, maphblock-1)
         type = ai.mapData(bx, by)
         if type == 0:
             found = True
