@@ -23,11 +23,6 @@ class InstructionHandler:
         else:
             self.idleticks = 0
 
-        if self.should_roam():
-            print("roamroam")
-            self.delegate_roam_instruction()
-            self.instructionstack.clear()
-
         # update instructionstack with latest instruction
         for i in range(10):
             if self.ai.scanGameMsg(i) not in self.chatmessages: # don't allow same message to be added multiple times
@@ -39,6 +34,12 @@ class InstructionHandler:
 
         if self.idleticks % 10 == 0:
             print("Idle ticks: " + str(self.idleticks))
+
+        if self.should_roam():
+            print("roamroam")
+            self.delegate_roam_instruction()
+            self.instructionstack.clear()
+            self.delayedinstructions.clear()
 
 
     def add_delayed_instruction(self, message):
