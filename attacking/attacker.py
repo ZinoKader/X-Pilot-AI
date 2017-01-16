@@ -18,9 +18,7 @@ class Attacker:
                 for y in range(self.ai.shipCountScreen()):
                     player_id = self.ai.playerId(i)
                     ship_id = self.ai.shipId(y)
-                    print(self.ai.playerName(i).strip() == target.strip())
-                    if player_id == ship_id and target in self.ai.playerName(i):
-                        print("shit")
+                    if player_id == ship_id and self.ai.playerName(i).strip() == target.strip():
                         target_id = y
                         break
 
