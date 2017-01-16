@@ -25,7 +25,6 @@ class InstructionHandler:
             self.idleticks = 0
 
         if self.should_roam():
-            print("roamroam")
             self.delegate_roam_instruction()
 
         # update instructionstack with latest instruction
