@@ -41,7 +41,6 @@ def extract_coordinates_move_instruction(message):
 
 
 def extract_target_ship_name(message):
-    print(message)
     return message.replace("mission attack ship ", "")
 
 

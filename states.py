@@ -1,6 +1,6 @@
 class StateHandler:
 
-    states = ["ready", "attacking", "pathfinding"]
+    states = ["ready", "attacking", "pathfinding", "roaming"]
     state = None
 
     def __init__(self, initstate = "ready"):
@@ -23,3 +23,6 @@ class StateHandler:
 
     def is_pathfinding(self):
         return self.state == "pathfinding"
+
+    def is_roaming(self):
+        return self.state == "roaming"
