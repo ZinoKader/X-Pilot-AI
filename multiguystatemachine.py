@@ -23,7 +23,7 @@ class MultiGuyStateMachine:
     def roam(self):
         if self.states.is_ready() or self.states.is_roaming() or self.states.is_attacking_nearest():
             self.states.set_current_state("roaming")
-            roamer.roam_random()
+            self.roamer.roam_random()
         else:
             print("Won't roam, not ready.")
 
