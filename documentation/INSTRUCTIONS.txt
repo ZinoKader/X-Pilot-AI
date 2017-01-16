@@ -10,4 +10,4 @@ Make the bot go to a coordinate on the map, in this case x=35, y=128 - "mission 
 
 The single bot (multiguy.py) will always start roaming after idling (having no instructions) for a specific amount of ticks.
 When roaming, the ship will go to random coordinates on the map. 
-The bot will decide to go out of roaming mode if a target is nearby and an "mission attack nearest" has been given at any point.
+The bot will decide to go out of roaming mode if a target is nearby and an "mission attack nearest" or "mission attack ship [shipname]" has been given at any point.
