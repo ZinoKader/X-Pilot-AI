@@ -13,7 +13,7 @@ class InstructionHandler:
         self.idleticks = 0
 
     def should_roam(self):
-        return (len(self.instructionstack) + len(self.delayedinstructions) == 0) and self.idleticks > 2000
+        return (len(self.instructionstack) + len(self.delayedinstructions) == 0) and self.idleticks > 200
 
 
     def update_instructions(self):
