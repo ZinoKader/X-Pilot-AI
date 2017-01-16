@@ -19,7 +19,8 @@ class Attacker:
                     player_id = self.ai.playerId(i)
                     ship_id = self.ai.shipId(y)
                     print(self.ai.playerName(i))
-                    if player_id == ship_id and self.ai.playerName(i) == target:
+                    print(target)
+                    if player_id == ship_id and target in self.ai.playerName(i):
                         print("shit")
                         target_id = y
                         break
