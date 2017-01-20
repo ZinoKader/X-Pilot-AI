@@ -1,3 +1,1 @@
-X - Pilot Group X7
-
-Borrowed code has been commented as such in each respective file.
+An AI player for the X-Pilot game that uses a state machine to make smart decisions.
